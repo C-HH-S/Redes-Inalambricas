@@ -1,0 +1,284 @@
+.button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+/* Estilo para el botón "Volver" */
+.boton-volver {
+    display: inline-block;
+    padding: 10px 20px; /* Espacio interno del botón */
+    background-color: #007bff; /* Color de fondo del botón (puedes cambiarlo) */
+    color: #fff; /* Color del texto del botón */
+    text-decoration: none; /* Elimina el subrayado del enlace */
+    border: none; /* Sin borde */
+    border-radius: 4px; /* Borde redondeado */
+    cursor: pointer; /* Cambia el cursor al pasar por encima */
+}
+
+/* Estilo para el botón cuando se pasa el cursor por encima */
+.boton-volver:hover {
+    background-color: #0056b3; /* Cambia el color de fondo al pasar el cursor */
+}
+
+/* Estilo para el botón de agregar */
+.boton-agregar {
+    display: inline-block;
+    padding: 10px 20px; /* Espacio interno del botón */
+    background-color: #48ff00; /* Color de fondo del botón (puedes cambiarlo) */
+    color: #fff; /* Color del texto del botón */
+    border: none; /* Sin borde */
+    border-radius: 4px; /* Borde redondeado */
+    cursor: pointer; /* Cambia el cursor al pasar por encima */
+}
+
+/* Estilo para el botón de agregar cuando se pasa el cursor por encima */
+.boton-agregar:hover {
+    background-color: #0056b3; /* Cambia el color de fondo al pasar el cursor */
+}
+
+body{
+    background-image: url('https://ossfitness.com/fotos/2021/07/strong-man-training-in-gym-1024x683.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+main{
+    background-color: rgba(255, 255, 255, 0.7); /* Opacidad del 70% (0.7) */
+    padding: 40px 20px;
+    margin: 0 auto; /* Centrado horizontal */
+    width: 1000px;
+    text-align: center;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 10px; /* Establece un radio de 10px para los bordes */
+    margin-top: 230px; /* Ajusta la distancia vertical desde la barra de menú */ 
+    align-items: center; /* Centrado horizontal */
+   
+}
+
+#tabla {
+    
+    background-color: rgba(255, 255, 255, 0.7); /* Opacidad del 70% (0.7) */
+    padding: 40px 20px;
+    margin: 0 auto; /* Centrado horizontal */
+    margin-top: 330px;
+    width: 800px;
+    text-align: center;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    flex-direction: column; /* Alinea el contenido en una sola columna */
+    align-items: center; /* Centra horizontalmente el contenido */
+    justify-content: center; /* Centra verticalmente el contenido */
+    border-radius: 10px; /* Establece un radio de 10px para los bordes */
+    overflow-y: auto; /* Hace que el contenido sea scrollable verticalmente */
+    max-height: 100vh; /* Limita la altura al 80% del alto de la ventana */
+}
+
+
+
+
+/* Estilo para centrar contenido dentro del main */
+.content-container {
+    text-align: left; /* Alinea el texto a la izquierda dentro del contenido */
+    max-width: 650px; /* Establece un ancho máximo para el contenido */
+    margin: 0 auto; /* Centrado horizontal del contenido */
+}
+
+
+
+/* centrar contenido de tablas*/
+
+table.centrar-tabla th,
+table.centrar-tabla td {
+    text-align: center;
+}
+
+table.table th {
+    font-weight: bold;
+}
+
+
+
+/* Estilos para el menú desplegable */
+
+.header__superior{
+    max-width: 1200;
+    margin: auto;
+    display: flex;  
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* barra menu */
+
+.container__menu{
+    width: 100%;
+    height: 70px;
+    background-color: rgb(247, 243, 15);
+    padding: 0px 20px;
+}
+
+.menu{
+    max-width: 1200px;
+    margin: auto;
+    height: 100%;    
+}
+
+
+nav{
+    height: 100%;
+
+}
+
+nav > ul{
+    height: 100%;
+    display: flex;
+}
+
+nav  ul  li{
+    height: 100%;
+    list-style: none;
+    position: relative;
+}
+
+nav > ul > li > a{
+    width: 100;
+    height: 100%;
+    display: flex;
+    color: #050505;
+    align-items: center;
+    padding: 14px;
+    text-transform: uppercase;
+    font-size: 14px;
+    transition: all 300ms ease;
+    text-decoration: solid;
+    font-family: fantasy;
+    font-size: large;
+}
+
+/* ICONO*/
+
+nav > ul > li:last-child > a{
+    background-image: url(../cerrar-sesion.png) ;
+    background-size: 24px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    padding: 20px 40px;
+}
+nav > ul > li:last-child:hover > a{
+    background-image: url(../cerrar-sesion.png) ;
+    background-size: 24px;
+    background-repeat: no-repeat;
+    background-position: center center;
+
+}
+
+a:hover{
+    transform: scale(1.1);
+    background: #f7b63d;
+    box-shadow: 0px 0px 10 px 0px rgba(0,0,0, 0.5);
+}
+
+#selected{
+    transform: scale(1.1);
+    transform: scale(1.1);
+    background-color: #f7b63d;
+    box-shadow: 0px 0px 10 px 0px rgba(0,0,0, 0.5);
+}
+
+/** Sub Menu*/
+
+nav ul li ul{
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    background-color: #f8f79d;
+    position: absolute;
+    top: 100px;
+    left: -5px;
+    padding: 14px 0px;
+    visibility: hidden;
+    opacity: 0;
+    box-shadow: 0px 0px 10 px 0px rgba(0,0,0, 0.5);
+    z-index: 10;
+    transition: all 300ms ease;
+    font-family: sans-serif;
+    font-weight: bold;
+}
+
+nav ul li:hover ul{
+    visibility: visible;
+    opacity: 1;
+    top: 70px;
+}
+
+nav ul li ul:before{
+    content: '';
+    width: 0;
+    height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    position: absolute;
+    top: -12;
+    left: 20px;
+}
+
+nav ul li ul li a{
+    display: block;
+    color:#000000;
+    padding: 6px;
+    padding-left: 14px;
+    margin-top: 10px;
+    font-size: 14px;
+    text-transform: uppercase;
+    transition: all 300ms ease;
+    align-items: center;
+    text-decoration: solid;
+} 
+
+nav ul li ul li a:hover{
+    background-color: #f7b63d;
+    color: #000000;
+    transform: scale(1.1);
+    padding-left: 30px;
+    font-size: 14px;
+    box-shadow: 0px 0px 10 px 0px rgba(0,0,0, 0.5);
+    align-items: center;
+}
+
+@media screen and (max-width){
+    .header__superior{
+        padding: 10px;
+    }
+
+    nav > ul{
+        flex-direction: column;
+        background-color: #f7b63d;
+        position: fixed;
+        left: 0;
+        top: 158px;
+        width: 100%;
+        height: 300px;
+        z-index: 100;
+        transition: all 300ms ease;
+        opacity: 0;
+        visibility: hidden;
+
+    }
+
+    nav > ul > li > a:hover{
+        transform: scale(1);
+
+    }
+}
