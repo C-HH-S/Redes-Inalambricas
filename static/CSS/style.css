@@ -282,3 +282,152 @@ nav ul li ul li a:hover{
 
     }
 }
+/*TEMPLETE MEMBRESIA.HTML*/
+.admin{
+    margin-top: 25px;
+    margin-left: 650px;
+}
+.user{
+    margin-top: 20px;
+    margin-left: 10px;
+}
+.titleMembresia{
+    color: white;
+    text-align: center;
+    font-family: sans-serif;
+    margin-top: 50px;
+    color: white; 
+    text-shadow: black 20em 20em 40em !important;
+}
+.tablaMembresia{
+    border: 1px;
+    text-align: center;
+    margin: 10.5%;
+    margin-left: 190px;
+    background-color:white;
+}
+th{
+    font-family: arial, sans-serif;
+    text-align: center;
+    border: 1px solid black !important;
+    background: #f7b63d;
+    padding: 10px;
+}
+table, td{
+    font-family: arial, sans-serif;
+    text-align: center;
+    border: 1px solid black !important;
+    background-color: white !important;
+    padding: 10px;
+}
+.membresia_activa{
+    background-color: #9bd13d;
+    border: none;
+    color: white;
+    border-radius: 5px;
+}
+.membresia_inactiva{
+    background-color: #f08080;
+    border: none;
+    color: white;
+    border-radius: 5px;
+}
+.editar{
+    display: flex;
+}
+.img_edit{
+    margin-left: 6px;
+}
+/*TEMPLETE MEMBRESIA.HTML*/
+
+/*TEMPLETE MIEMBRO*/
+.img_user{
+    border-radius: 50%;
+    width: 170px;
+    height: 166px;
+    margin-left: 43%;
+    margin-top: 50px;
+    align-items: center;
+}
+.title_perfil{
+    margin-top: 10px;
+    color: white;
+    text-align: center;
+    font-family: sans-serif;
+    color: white; 
+    text-shadow: black 20em 20em 40em !important;
+}
+.containers_info{
+    padding: 50px;
+    background: white;
+    margin: 20px;
+    margin-left: 300px;
+    margin-right: 300px;
+    display: flex;
+  align-items: center;
+}
+.edit_perfil{
+    margin-left: 40px;
+    color: black;
+    text-align: justify;
+}
+.btn{
+    margin-left: 250px;
+}
+.bton{
+    margin-left: 220px;
+}
+
+.formulario_info{
+    background: white;
+    margin-top: 10%;
+    margin-top: 5px;
+    margin-left: 300px;
+    margin-right: 300px;
+    margin-bottom: 100px;
+    padding: 60px;
+}
+.campo{
+    width: 100%;
+    margin-bottom: 10px;
+}
+.form_password{
+    background: white;
+    margin-top: 50px;
+    margin-left: 300px;
+    margin-right: 300px;
+    padding: 50px;
+}
+.container_botones{
+    display: flex;
+}
+.contenedor{
+    background: #F1B63C;
+    margin-top: 40px;
+    margin-left: 350px;
+    margin-bottom: 10px;
+    margin-right: 350px;
+    display: flex;
+    border-radius: 25px;    
+}
+.columna{
+    color: black;
+    margin-left: 100px;
+    padding-top: 40px;
+    margin-right: 20px;
+    
+}
+.segunda_columna{
+    color: black;
+    margin-top: 40px;
+    margin-left: 100px;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+.boton_edit{
+    margin:auto;
+}
+
+h2{
+    text-align: center;
+}

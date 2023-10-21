@@ -1,5 +1,6 @@
 from flask_mysqldb import MySQL
 from flask import Flask, jsonify, render_template, request, redirect, url_for, flash
+import mysql.connector
 
 app = Flask(__name__, static_folder='static', template_folder='template')
 
@@ -16,7 +17,7 @@ app.secret_key = 'mysecretkey'
 
 
 # Base de datos ficticia para usuarios
-users_db = [{'nombre': 'maria', 'apellido': 'lopez', 'edad': '23', 'correo': 'maria@lopez', 'telefono': '23456787654', 'contraseña': '000'},
+users_db = [{'nombre': 'maria', 'apellido': 'lopez', 'edad': '23', 'correo': 'maria@lopez', 'telefono': '2345678765', 'contraseña': '000'},
             {'nombre': 'jose', 'apellido': 'torres', 'edad': '22',
                 'correo': 'jose@torres', 'telefono': '89765756876', 'contraseña': '001'},
             {'nombre': 'ana', 'apellido': 'cruz', 'edad': '45', 'correo': 'ana@cruz', 'telefono': '5678908767', 'contraseña': '002'}]
@@ -76,6 +77,22 @@ def listado_maquinas():
 def miembro():
     return render_template('miembro.html')
 
+@app.route('/perfil')
+def perfil():
+    return render_template('perfil.html')
+
+@app.route('/info_personal_user')
+def info_personal_user():
+    return render_template('info_personal_user.html')
+
+@app.route('/cambio_contrasena_user')
+def cambio_contrasena_user():
+    return render_template('cambio_contrasena_user.html')
+
+@app.route('/membresia_user')
+def membresia_user():
+    return render_template('membresia_user.html')
+
 # Ruta para el panel del entrenador (entrenador)
 @app.route('/entrenador')
 def entrenador():
@@ -92,7 +109,17 @@ def ver_historial():
     return render_template('vista_historial_maquinaria.html')
 
 
-
+#membresia administrador
+@app.route('/membresia')
+#@app.route('/membresia', methods=['GET', 'POST'])
+def membresia():
+        #cur = mysql.connection.cursor()
+        #cur.execute("SELECT * FROM clientes")  
+        #rows = cur.fetchall()
+        #cur.close()
+        #return render_template('membresia.html', data=rows)
+        return render_template('membresia.html')
+       
 # Vista para eliminar usuario
 @app.route('/eliminar_usuario', methods=['GET', 'POST'])
 def eliminar_usuario():
