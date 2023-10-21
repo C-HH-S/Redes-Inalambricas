@@ -1,6 +1,6 @@
 from flask_mysqldb import MySQL
 from flask import Flask, jsonify, render_template, request, redirect, url_for, flash
-#import mysql.connector
+import mysql.connector
 
 app = Flask(__name__, static_folder='static', template_folder='template')
 
@@ -103,10 +103,7 @@ def ver_historial():
     return render_template('vista_historial_maquinaria.html')
 
 
-# Vista para el listado de ususarios
-@app.route('/listado_usuarios', methods=['GET', 'POST'])
-def listado_usuarios():
-    return render_template('listado_usuarios.html')
+
 
 #membresia administrador
 @app.route('/membresia')
@@ -119,8 +116,8 @@ def membresia():
     return render_template('membresia.html')
        
 # Vista para eliminar usuario
-@app.route('/eliminar_usuario', methods=['GET', 'POST'])
-def eliminar_usuario():
+@app.route('/listado_usuarios', methods=['GET', 'POST'])
+def listado_usuarios():
     cur = mysql.connection.cursor()
     cur.execute('SELECT * FROM miembros')
     data = cur.fetchall()
@@ -210,11 +207,12 @@ def agregar_usuario():
         correo = request.form['correo']
         telefono = request.form['telefono']
         contraseña = request.form['contraseña']
+        estado = request.form['estado']
 
         # Agregar el usuario a la base de datos
         cur = mysql.connection.cursor()
-        cur.execute('INSERT INTO miembros (nombre, apellido, edad, correo, telefono, contraseña) VALUES (%s, %s, %s, %s, %s, %s)',
-                    (nombre, apellido, edad, correo, telefono, contraseña))
+        cur.execute('INSERT INTO miembros (nombre, apellido, edad, correo, telefono, contraseña, estado) VALUES (%s, %s, %s, %s, %s, %s, %s)',
+                    (nombre, apellido, edad, correo, telefono, contraseña, estado))
         mysql.connection.commit()
         flash('Usuario agregado correctamente')
 

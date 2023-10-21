@@ -90,7 +90,7 @@ main{
 
 /* Estilo para centrar contenido dentro del main */
 .content-container {
-    text-align: left; /* Alinea el texto a la izquierda dentro del contenido */
+    text-align:left; /* Alinea el texto a la izquierda dentro del contenido */
     max-width: 650px; /* Establece un ancho máximo para el contenido */
     margin: 0 auto; /* Centrado horizontal del contenido */
 }
@@ -371,9 +371,7 @@ table, td{
     color: black;
     text-align: justify;
 }
-.btn{
-    margin-left: 250px;
-}
+
 .bton{
     margin-left: 220px;
 }
