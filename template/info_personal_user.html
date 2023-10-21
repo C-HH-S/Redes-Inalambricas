@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Perfil</title>
+        <link rel="stylesheet" type="text/css" href="static\CSS\style.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+            crossorigin="anonymous">
+    </head>
+<body>
+    <header>
+        <div class="container__menu">
+            <div class="menu">
+                <nav>
+                    <ul>
+                        <li><a href="#" id="selected">Inicio</a></li>
+                        <li><a href="#">Servicios</a>
+                            <ul>
+                                <li><a href="{{url_for('perfil')}}">Perfil</a></li>
+                                <li><a href="#">Reservas</a></li>
+                                <li><a href="#">Planes de trabajo</a></li>
+                                <li><a href="#">Membresias</a></li>
+                                <li><a href="#">Mi proceso</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#">Nosotros</a></li>
+                        <li><a href="#">Contactos</a></li>
+                        <li class="admin"><h6>Juan</h6></li>
+                        <li class="user"><img src="/static/img/ic_person.png" alt=""></li>
+                        <li><a href="{{ url_for('login') }}"></a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+    <div class="formulario_info">
+        <h1 class="edit_perfil">Información Personal</h1>
+        <hr>
+        <form action="">
+            <h6><b>Nombre completo</b></h6>
+            <input class="campo" type="text" name="nombre" id="nombre">
+            <br>
+            <h6><b>Celular</b></h6>
+            <input class="campo" type="tel" name="celular" id="celular">
+            <br>
+            <h6><b>Correo electronico</b></h6>
+            <input class="campo" type="email" name="correo" id="correo">
+            <br>
+            <h6><b>Documento de identidad</b></h6>
+            <input class="campo" type="text" name="identificacion" id="identificacion">
+            <br>
+            <h6><b>Nombre contacto de emergencia</b></h6>
+            <input class="campo" type="text" name="contacto_emergencia" id="contacto_emergencia">
+            <br>
+            <h6><b>Dirección</b></h6>
+            <input class="campo"type="text" name="direccion" id="direccion">
+            <br>
+            <h6><b>Departamento</b></h6>
+            <input class="campo" type="text" name="departamento" id="departamento">
+            <br>
+            <h6><b>Ciudad</b></h6>
+            <input class="campo" type="text" name="ciudad" id="ciudad">
+            <br>
+            <h6><b>Barrio</b></h6>
+            <input class="campo" type="text" name="barrio" id="barrio">
+            <br> <br>
+            <a class="btn btn-primary ml-6">Actualizar Datos</a>
+        </form>
+    </div>
+    
+</body>
+</html>

@@ -19,19 +19,19 @@
             <div class="menu">
                 <nav>
                     <ul>
-                        <li><a href="#" id="selected">Inicio</a></li>
+                        <li><a href="{{url_for('miembro')}}" id="selected">Inicio</a></li>
                         <li><a href="#">Servicios</a>
                             <ul>
-                                <li><a href="#">Perfil</a></li>
-                                <li><a href="#">Cargar horas</a></li>
+                                <li><a href="{{url_for('perfil')}}">Perfil</a></li>
+                                <li><a href="#">Reservas</a></li>
                                 <li><a href="#">Planes de trabajo</a></li>
-                                <li><a href="#">...</a></li>
-                                <li><a href="#">...</a></li>
+                                <li><a href="{{url_for('membresia_user')}}">Membresias</a></li>
+                                <li><a href="#">Mi proceso</a></li>
                             </ul>
                         </li>
                         <li><a href="#">Nosotros</a></li>
                         <li><a href="#">Contactos</a></li>
-                        <li class="admin"><h6>Admin</h6></li>
+                        <li class="admin"><h6>Juan</h6></li>
                         <li class="user"><img src="/static/img/ic_person.png" alt=""></li>
                         <li><a href="{{ url_for('login') }}"></a></li>
                     </ul>
@@ -39,12 +39,9 @@
             </div>
         </div>
     </header>
+        
 
-
-
-    <main>
-        <h2>Bienvenido Entrenador</h2>
-    </main>
+        
 </body>
 
 </html>
