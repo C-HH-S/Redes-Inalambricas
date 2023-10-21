@@ -41,17 +41,22 @@
             <h3>Gestión de Máquinas</h3><br><br>
             <div class="form-group">
                 <!-- Botón para ir a la página de Buscar maquinas -->
-                <a href="{{ url_for('lista_maquinas') }}" class="btn btn-warning btn-block" id="BuscarMiembro">Máquinas
+                <a href="{{ url_for('lista_maquinas') }}" class="btn btn-warning btn-block">Lista de Máquinas
                 </a>
 
                 <!-- Botón para ir a la página de añadir maquina-->
-                <a href="{{ url_for('agregar_maquina') }}" class="btn btn-warning btn-block" id="AñadirMaquina">Añadir
+                <a href="{{ url_for('agregar_maquina') }}" class="btn btn-warning btn-block" >Añadir
                     Máquina</a>
 
                 <!-- Botón para ir a la página de mantenimiento -->
-                <a href="{{ url_for('eliminar_usuario') }}" class="btn btn-warning btn-block"
-                    id="EliminarUsuario">Mantenimiento de máquinas</a>
+                <a href="{{ url_for('mantenimiento_maquinas') }}" class="btn btn-warning btn-block">Mantenimiento de máquinas</a>
+                <br>
+                <br>
+                <!-- Botón para ir a la página de busqueda-->
+                <a href="{{ url_for('buscar_maquina') }}" class="btn btn-warning btn-block">Buscar máquina</a>
 
+                <!-- Botón para ir al estado de maquinas-->
+                <a href="{{ url_for('estado_maquinas') }}" class="btn btn-warning btn-block">Estado máquinas</a>
             </div>
         </div>
         </div>

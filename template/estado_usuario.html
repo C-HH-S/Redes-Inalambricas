@@ -11,7 +11,6 @@
         crossorigin="anonymous">
 </head>
 
-
 <body>
     <header>
         <div class="container__menu">
@@ -24,7 +23,7 @@
                                 <li><a href="{{ url_for('gestion_usuarios') }}">Gestión de usuarios</a></li>
                                 <li><a href="{{ url_for('gestion_maquinas') }}">Gestión de máquinas</a></li>
                                 <li><a href="#">Gestión de nómina</a></li>
-                                <li><a href="#">Gestión de membresias</a></li>
+                                <li><a href="#">Gestión de membresías</a></li>
                                 <li><a href="#">Gestión de instructores</a></li>
                             </ul>
                         </li>
@@ -39,64 +38,58 @@
 
     {% with messages = get_flashed_messages() %}
     {% if messages %}
-    {% for message in messages%}
+    {% for message in messages %}
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
         {{message}}
-    </div>    
-    
+    </div>
     {% endfor %}
     {% endif %}
     {% endwith %}
 
-
     <main id="tabla">
         <div class="content-container">
             <div class="col-md-5">
-                    <h1>Búsqueda de Miembros</h1>
-                    <form method="POST" action="/buscar_miembro">
-                        <label for="busqueda">Buscar por nombre:</label>
-                        <input type="text" id="nombre" name="nombre" required>
-                        <button type="submit">Buscar</button>
-                    </form>
-
-                    <!DOCTYPE html>
-                    <html>
-
-                    <head>
-                        <title>Resultados de la Búsqueda</title>
-                    </head>
-
-                    <body>
-
-                        {% if resultados %}
-                        <h2>Resultados de la búsqueda:</h2>
-                        <ul>
-                            {% for miembro in resultados %}
-                            <li>Nombre: {{ miembro[1] }}</li>
-                            <li>Apellido: {{ miembro[2]}}</li>
-                            <li>Edad: {{ miembro[3] }}</li>
-                            <li>Correo: {{ miembro[4] }}</li>
-                            <li>Telefono: {{ miembro[5] }}</li>
-                            <li>Contraseña: {{ miembro[6] }}</li>
-                            <li>Estado: 
-                                {% if miembro[7] == 1 %}
+                <table class="table table-striped table-bordered bg-white centrar-tabla">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Edad</th>
+                            <th>Correo</th>
+                            <th>Telefono</th>
+                            <th>Contraseña</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for m in miembros %}
+                        <tr>
+                            <td>{{ m.1 }}</td>
+                            <td>{{ m.2 }}</td>
+                            <td>{{ m.3 }}</td>
+                            <td>{{ m.4 }}</td>
+                            <td>{{ m.5 }}</td>
+                            <td>{{ m.6 }}</td>
+                            <td>
+                                {% if m[7] == 1 %}
                                 Activo
                                 {% else %}
                                 Inactivo
                                 {% endif %}
-                            </li>
-                            <br>
-                            <br>
-                            {% endfor %}
-                        </ul>
-                        {% else %}
-                        <p>No se encontraron resultados.</p>
-                        {% endif %}
-                        <a href="{{ url_for('gestion_usuarios') }}" class="btn btn-primary btn-block">Volver</a>
+                            </td>
+                            <td>
+                                <form method="post" action="/cambiar_estado_miembro">
+                                    <input type="hidden" name="miembro_id" value="{{ m[0] }}">
+                                    <button type="submit" class="btn btn-danger">Cambiar Estado</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <a href="{{ url_for('gestion_usuarios') }}" class="btn btn-primary btn-block">Volver</a>
             </div>
         </div>
     </main>
-
-</body>
-
-</html>
+    

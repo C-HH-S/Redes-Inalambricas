@@ -41,15 +41,12 @@
             <h3>Gestión de Usuarios</h3><br><br>
             <div class="form-group">
 
+                <!-- Botón para ir a la lista de usuarios -->
+                <a href="{{ url_for('listado_usuarios') }}" class="btn btn-warning btn-block" id="listadomiembro">Listado de Miembros</a>
+
                 <!-- Botón para ir a la página de añadir usuario -->
                 <a href="{{ url_for('agregar_usuario') }}" class="btn btn-warning btn-block" id="AñadirUsuario">Añadir
-                    Usuario</a>
-
-                <!-- Botón para ir a la página de eliminar usuario -->
-                <a href="{{ url_for('eliminar_usuario') }}" class="btn btn-warning btn-block"
-                    id="EliminarUsuario">Eliminar
-                    Usuario</a>
-
+                    Miembro</a>
 
                 <!-- Botón para ir a la página de Buscar usuario -->
                 <a href="{{ url_for('buscar_miembro') }}" class="btn btn-warning btn-block" id="BuscarMiembro">Buscar
@@ -58,6 +55,12 @@
                 <!-- Botón para ir a la página de Editar usuario -->
                 <a href="{{ url_for('editar_miembro') }}" class="btn btn-warning btn-block" id="EditarMiembro">Editar
                     Miembro</a>
+                    <br>
+                    <br>
+                <!-- Botón para ir a la página de estado usuario -->
+                <a href="{{ url_for('estado_usuario') }}" class="btn btn-warning btn-block"
+                id="EstadoUsuario">Estado de
+                Miembros</a>
 
             </div>
         </div>

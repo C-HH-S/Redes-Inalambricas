@@ -42,44 +42,35 @@
     {% for message in messages%}
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
         {{message}}
-    </div>    
-    
+    </div>
     {% endfor %}
     {% endif %}
     {% endwith %}
 
-
     <main id="tabla">
         <div class="content-container">
             <div class="col-md-5">
-                    <h1>Búsqueda de Miembros</h1>
-                    <form method="POST" action="/buscar_miembro">
+                <form method="post">
+                    <h1>Búsqueda de Máquinas</h1>
+                    <form method="POST" action="/buscar_maquina">
                         <label for="busqueda">Buscar por nombre:</label>
                         <input type="text" id="nombre" name="nombre" required>
                         <button type="submit">Buscar</button>
                     </form>
 
-                    <!DOCTYPE html>
-                    <html>
-
-                    <head>
-                        <title>Resultados de la Búsqueda</title>
-                    </head>
-
-                    <body>
-
-                        {% if resultados %}
+                    {% if resultados %}
                         <h2>Resultados de la búsqueda:</h2>
                         <ul>
-                            {% for miembro in resultados %}
-                            <li>Nombre: {{ miembro[1] }}</li>
-                            <li>Apellido: {{ miembro[2]}}</li>
-                            <li>Edad: {{ miembro[3] }}</li>
-                            <li>Correo: {{ miembro[4] }}</li>
-                            <li>Telefono: {{ miembro[5] }}</li>
-                            <li>Contraseña: {{ miembro[6] }}</li>
-                            <li>Estado: 
-                                {% if miembro[7] == 1 %}
+                            {% for m in resultados %}
+                            <li>Nombre: {{ m[1] }}</li>
+                            <li>Estado:
+                                {% if m.2 == 1 %}
+                                    BUEN ESTADO
+                                    {% else %}
+                                    MAL ESTADO
+                                    {% endif %}
+                            <li>Registro: {{ m[3] }}</li>
+                            <li>Disponibilidad: {% if m[4] == 1 %}
                                 Activo
                                 {% else %}
                                 Inactivo
@@ -92,7 +83,9 @@
                         {% else %}
                         <p>No se encontraron resultados.</p>
                         {% endif %}
-                        <a href="{{ url_for('gestion_usuarios') }}" class="btn btn-primary btn-block">Volver</a>
+
+                    <a href="{{ url_for('gestion_maquinas') }}" class="btn btn-primary btn-block">Volver</a>
+                </form>
             </div>
         </div>
     </main>

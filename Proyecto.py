@@ -21,9 +21,8 @@ users_db = [{'nombre': 'maria', 'apellido': 'lopez', 'edad': '23', 'correo': 'ma
                 'correo': 'jose@torres', 'telefono': '89765756876', 'contraseña': '001'},
             {'nombre': 'ana', 'apellido': 'cruz', 'edad': '45', 'correo': 'ana@cruz', 'telefono': '5678908767', 'contraseña': '002'}]
 
+
 # Ruta para la página de inicio de sesión
-
-
 @app.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -42,8 +41,6 @@ def login():
     return render_template('login.html')
 
 # Función para autenticar al usuario
-
-
 def authenticate_user(nombre, contraseña):
     for user in users_db:
         if user['nombre'] == nombre and user['contraseña'] == contraseña:
@@ -66,9 +63,6 @@ def gestion_usuarios():
 def gestion_maquinas():
      return render_template('gestion_maquinas.html')
 
-@app.route('/lista_maquinas')
-def listado_maquinas():
-     return render_template('lista_maquinas.html')
 
 
 # Ruta para el panel del miembro (miembro)
@@ -86,35 +80,53 @@ def entrenador():
 def añadir_maquina():
     return render_template('agregar_maquina.html')
 
-# Ruta para el panel de ver historial
+# Ruta para el panel de ver historial de maquinaria
 @app.route('/vista_historial_maquinaria')
 def ver_historial():
     return render_template('vista_historial_maquinaria.html')
 
-
-
-# Vista para eliminar usuario
-@app.route('/eliminar_usuario', methods=['GET', 'POST'])
-def eliminar_usuario():
+# Vista para el listado de ususarios
+@app.route('/listado_usuarios', methods=['GET', 'POST'])
+def listado_usuarios():
     cur = mysql.connection.cursor()
     cur.execute('SELECT * FROM miembros')
     data = cur.fetchall()
     mysql.connection.commit()
+    return render_template('listado_usuarios.html', miembros=data)
 
-    return render_template('eliminar_usuario.html', miembros=data)
-
-# accion de eliminar usuario
-@app.route("/delete/<string:id>")
-def deleteUser(id):
+# Vista para cambiar el estado de un usuario
+@app.route('/estado_usuario', methods=['GET', 'POST'])
+def estado_usuario():
     cur = mysql.connection.cursor()
-    cur.execute('DELETE FROM miembros WHERE id = %s', (id,))
+    cur.execute('SELECT * FROM miembros')
+    data = cur.fetchall()
     mysql.connection.commit()
-    flash('miembro eliminado correctamente')
-    return redirect(url_for('eliminar_usuario'))
+    return render_template('estado_usuario.html', miembros=data)
+
+
+#accion de cambiar el estado de un miembro
+@app.route('/cambiar_estado_miembro', methods=['POST'])
+def cambiar_estado_miembro():
+    if request.method == 'POST':
+        miembro_id=None
+        estado_actual=None
+        miembro_id = request.form.get('miembro_id')
+        # Realiza una consulta para obtener el estado actual del miembro
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT estado FROM miembros WHERE id = %s", (miembro_id,))
+        estado_actual = cur.fetchone()
+        print(estado_actual)
+        # Cambia el estado (por ejemplo, de True a False o viceversa)
+        nuevo_estado = not estado_actual[0]
+        # Realiza la actualización en la base de datos
+        cur.execute("UPDATE miembros SET estado = %s WHERE id = %s", (nuevo_estado, miembro_id))
+        mysql.connection.commit()
+        cur.close()
+        flash('Estado actualizado correctamente')
+    return redirect(url_for('estado_usuario') ) # Renderiza la plantilla con los datos actualizados
+
 
 # Vista para editar usuario
-
-
 @app.route('/editar_miembro', methods=['GET', 'POST'])
 def editar_miembro():
     cur = mysql.connection.cursor()
@@ -125,8 +137,6 @@ def editar_miembro():
     return render_template('editar_miembro.html', miembros=data)
 
 # accion de buscar usuario
-
-
 @app.route("/edit/<string:id>")
 def buscarid(id):
     cur = mysql.connection.cursor()
@@ -225,54 +235,48 @@ def agregar_maquina():
     return render_template('agregar_maquina.html')
 
 
-# Vista buscar historial de máquina
+# Vista mirar el listado de maquinas
 @app.route('/lista_maquinas', methods=['GET', 'POST'])
 def lista_maquinas():
     data = None
-    if request.method == 'POST':
-        # Obtén el término de búsqueda del formulario
-        nombre = request.form.get('nombre')
-        cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM maquinas WHERE LOWER(nombre) = %s", (nombre,))
-        data = cur.fetchall()
-        cur.close()
-        if data:
-            flash('Máquina encontrada.')
-            return render_template('lista_maquinas.html', resultados=data)
-        else:
-            flash('No se encontraron máquinas con ese nombre.')
-    return render_template('lista_maquinas.html')
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM maquinas')
+    data = cur.fetchall()
+    mysql.connection.commit()
+    return render_template('lista_maquinas.html', miembros=data)
 
-
+# Vista del estado de máquinas
+@app.route('/estado_maquinas', methods=['GET', 'POST'])
+def estado_maquinas():
+    data = None
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM maquinas')
+    data = cur.fetchall()
+    mysql.connection.commit()
+    return render_template('estado_maquinas.html', maquinas=data)
 
 # accion de editar estado de máquina
 @app.route('/cambiar_estado_maquina', methods=['POST'])
 def cambiar_estado():
-    data = None
-    estado_actual = None
     if request.method == 'POST':
+        maquina_id = None
         maquina_id = request.form.get('maquina_id')
+        print("maquina_id:", maquina_id)
         # Realiza una consulta para obtener el estado actual del atributo booleano
         cur = mysql.connection.cursor()
         cur.execute("SELECT estado FROM maquinas WHERE IdMaquina = %s", (maquina_id,))
         estado_actual = cur.fetchone()
+        print(estado_actual)
         # Cambia el estado (por ejemplo, de True a False o viceversa)
         nuevo_estado = not estado_actual[0]
 
         # Realiza la actualización en la base de datos
-        cur.execute("UPDATE maquinas SET estado = %s WHERE IdMaquina = %s", (nuevo_estado, maquina_id))
+        cur.execute("UPDATE maquinas SET estado = %s, disponibilidad = %s WHERE IdMaquina = %s", (nuevo_estado, nuevo_estado, maquina_id))
         mysql.connection.commit()
 
-        # Ahora, cambia el atributo "disponibilidad" basado en el nuevo estado
-        disponibilidad = nuevo_estado
-        cur.execute("UPDATE maquinas SET disponibilidad = %s WHERE IdMaquina = %s", (disponibilidad, maquina_id))
-
-        # Realiza una nueva consulta para obtener los datos actualizados
-        cur.execute("SELECT * FROM maquinas")
-        data = cur.fetchall()
         cur.close()
         flash('Estado actualizado correctamente')
-        return render_template('lista_maquinas.html', resultados=data)  # Renderiza la plantilla con los datos actualizados
+        return redirect(url_for('estado_maquinas'))  # Renderiza la plantilla con los datos actualizados
 
 # Traer el historial de la máquina
 @app.route("/historial/<id>")
@@ -283,6 +287,54 @@ def gethistorial(id):
         cur.close()
         flash('Historial de máquina encontrado correctamente')
         return render_template('vista_historial_maquina.html', resultados=data) # Renderiza la plantilla con los datos actualizados
+
+
+#vista de buscar maquina
+@app.route('/buscar_maquina', methods=['GET', 'POST'])
+def buscar_maquina():
+    data = None
+    if request.method == 'POST':
+        # Obtén el término de búsqueda del formulario
+        nombre = request.form.get('nombre')
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM maquinas WHERE LOWER(nombre) = %s", (nombre,))
+        data = cur.fetchall()
+        cur.close()
+        if data:
+            flash('Máquina encontrado.')
+            return render_template('buscar_maquina.html', resultados=data)
+        else:
+            flash('No se encontraron máquinas con ese nombre.')
+    return render_template('buscar_maquina.html')
+
+
+# Vista mantenimiento de maquinas
+@app.route('/mantenimiento_maquinas', methods=['GET', 'POST'])
+def mantenimiento_maquinas():
+    data = None
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM maquinas WHERE estado = 0')
+    data = cur.fetchall()
+    mysql.connection.commit()
+    return render_template('mantenimiento_maquinas.html', miembros=data)
+
+# Traer el historial de la máquina
+@app.route("/mantenimiento/<maquina_id>")
+def getmantenimiento(maquina_id):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM maquinas WHERE IdMaquina = %s", (maquina_id,))
+    maquina = cur.fetchone()
+    cur.close()
+
+    if request.method == 'POST':
+        # Aquí puedes capturar los datos de fecha y hora seleccionados por el usuario
+        fecha = request.form.get('fecha')
+        hora = request.form.get('hora')
+        # Luego, puedes guardar esta información en tu base de datos o realizar otras acciones necesarias.
+
+        flash(f'Cita agendada para {fecha} a las {hora}')
+    return render_template('vista_mantenimiento.html', maquina=maquina) # Renderiza la plantilla con los datos actualizados
+
 
 
 if __name__ == '__main__':
