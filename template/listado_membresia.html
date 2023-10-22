@@ -39,7 +39,7 @@
 
     <h1 class="titleMembresia">LISTADO DE MEMBRESIAS</h1>
     <div class="tablaContainer">
-      <table class="tablaMembresia">
+      <table id="tabla" class="tablaMembresia">
         <tr class="titulos">
           <th>ID</th>
           <th>NOMBRE</th>
@@ -49,6 +49,9 @@
           <th>TELÉFONO</th>
           <th>CONTRASEÑA</th>
           <th>MEMBRESIA</th>
+          <th>Fecha Inicio</th>
+          <th>Fecha final</th>
+          <th>Costo</th>
           <th>ESTADO</th>
           <th></th>
         </tr>
@@ -61,16 +64,14 @@
           <td>3144912788</td>
           <td>JuR1234</td>
           <td>Mensual</td>
+          <td>01/10/23</td>
+          <td>01/11/23</td>
+          <td>150000</td>
           <td> 
             <button class="membresia_activa">
               <label>Activo</label>
             </button> 
           </td>
-          <td> 
-            <div class="editar">
-              <a href="">Editar</a> <img class="img_edit" src="/static/img/ic_editar.png" alt="">
-            </div>
-        </tr>
         <tr>
           <td>2</td>
           <td>Mariana</td>
@@ -80,15 +81,15 @@
           <td>3123459476</td>
           <td>mariNandez02</td>
           <td>Semanal</td>
+          <td>01/10/23</td>
+          <td>08/10/23</td>
+          <td>55000</td>
           <td> 
             <button class="membresia_inactiva">
               <label>Inactivo</label>
             </button> 
           </td>
           <td> 
-            <div class="editar">
-              <a href="">Editar</a> <img class="img_edit" src="/static/img/ic_editar.png" alt="">
-            </div>
         </tr>
         <tr>
           <td>3</td>
@@ -99,18 +100,17 @@
           <td>3258074506</td>
           <td>10358165</td>
           <td>Trimestral</td>
+          <td>01/07/23</td>
+          <td>01/10/23</td>
+          <td>400000</td>
           <td> 
             <button class="membresia_activa">
               <label>Activo</label>
             </button> 
           </td>
-          <td> 
-            <div class="editar">
-              <a href="">Editar</a> <img class="img_edit" src="/static/img/ic_editar.png" alt="">
-            </div>
-          </td>
         </tr>
       </table>
+      <a style="margin-left: 250px" href="{{ url_for('gestion_membresias') }}" class="btn btn-primary btn-block">Volver</a>
     </div>
       
     

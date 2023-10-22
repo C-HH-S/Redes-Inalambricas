@@ -64,6 +64,10 @@ def gestion_usuarios():
 def gestion_maquinas():
      return render_template('gestion_maquinas.html')
 
+@app.route('/gestion_membresias')
+def gestion_membresias():
+     return render_template('gestion_membresias.html')
+
 
 
 # Ruta para el panel del miembro (miembro)
@@ -105,15 +109,115 @@ def ver_historial():
 
 
 
-#membresia administrador
-@app.route('/membresia')
-def membresia():
+#estado membresia administrador
+@app.route('/estado_membresia')
+def estado_membresia():
         #cur = mysql.connection.cursor()
         #cur.execute("SELECT * FROM clientes")  
         #rows = cur.fetchall()
         #cur.close()
         #return render_template('membresia.html', data=rows)
-    return render_template('membresia.html')
+    return render_template('estado_membresia.html')
+
+#listado membresia administrador
+@app.route('/listado_membresia')
+def listado_membresia():
+        #cur = mysql.connection.cursor()
+        #cur.execute("SELECT * FROM clientes")  
+        #rows = cur.fetchall()
+        #cur.close()
+        #return render_template('membresia.html', data=rows)
+    return render_template('listado_membresia.html')
+
+#editar membresia administrador
+@app.route('/editar_membresia')
+def editar_membresia():
+        #cur = mysql.connection.cursor()
+        #cur.execute("SELECT * FROM clientes")  
+        #rows = cur.fetchall()
+        #cur.close()
+        #return render_template('membresia.html', data=rows)
+    return render_template('editar_membresia.html')
+
+#vista editar membresia
+@app.route('/vista_editar_membresia')
+def vista_editar_membresia():
+        #cur = mysql.connection.cursor()
+        #cur.execute("SELECT * FROM clientes")  
+        #rows = cur.fetchall()
+        #cur.close()
+        #return render_template('membresia.html', data=rows)
+    return render_template('vista_editar_membresia.html')
+
+#vista principal de asignar membresia
+@app.route('/asignar_membresia')
+def asignar_membresia():
+        #cur = mysql.connection.cursor()
+        #cur.execute("SELECT * FROM clientes")  
+        #rows = cur.fetchall()
+        #cur.close()
+        #return render_template('membresia.html', data=rows)
+    return render_template('asignar_membresia.html')
+
+#vista secundaria de asignar membresia
+@app.route('/vista_asignar_membresia')
+def vista_asignar_membresia():
+        #cur = mysql.connection.cursor()
+        #cur.execute("SELECT * FROM clientes")  
+        #rows = cur.fetchall()
+        #cur.close()
+        #return render_template('membresia.html', data=rows)
+    return render_template('vista_asignar_membresia.html')
+
+#vista estdo de membresia desde miembro
+@app.route('/miembro_estado_membresia')
+def miembro_estado_membresia():
+        #cur = mysql.connection.cursor()
+        #cur.execute("SELECT * FROM clientes")  
+        #rows = cur.fetchall()
+        #cur.close()
+        #return render_template('membresia.html', data=rows)
+    return render_template('miembro_estado_membresia.html')
+
+#vista de reservas desde miembro
+@app.route('/reservas_miembro')
+def reservas_miembro():
+        #cur = mysql.connection.cursor()
+        #cur.execute("SELECT * FROM clientes")  
+        #rows = cur.fetchall()
+        #cur.close()
+        #return render_template('membresia.html', data=rows)
+    return render_template('reservas_miembro.html')
+
+#reservar clase desde miembro
+@app.route('/reservar_clase')
+def reservar_clase():
+        #cur = mysql.connection.cursor()
+        #cur.execute("SELECT * FROM clientes")  
+        #rows = cur.fetchall()
+        #cur.close()
+        #return render_template('membresia.html', data=rows)
+    return render_template('reservar_clase.html')
+
+#reservar maquina desde miembro
+@app.route('/reservar_maquina')
+def reservar_maquina():
+        #cur = mysql.connection.cursor()
+        #cur.execute("SELECT * FROM clientes")  
+        #rows = cur.fetchall()
+        #cur.close()
+        #return render_template('membresia.html', data=rows)
+    return render_template('reservar_maquina.html')
+
+#plan de trabado de miembro
+@app.route('/plan_de_trabajo_miembro')
+def plan_de_trabajo_miembro():
+        #cur = mysql.connection.cursor()
+        #cur.execute("SELECT * FROM clientes")  
+        #rows = cur.fetchall()
+        #cur.close()
+        #return render_template('membresia.html', data=rows)
+    return render_template('plan_de_trabajo_miembro.html')
        
 # Vista para eliminar usuario
 @app.route('/listado_usuarios', methods=['GET', 'POST'])

@@ -19,9 +19,9 @@
                         <li><a href="#">Servicios</a>
                             <ul>
                                 <li><a href="{{url_for('perfil')}}">Perfil</a></li>
-                                <li><a href="{{url_for('reservas_miembro')}}">Reservas</a></li>
-                                <li><a href="{{url_for('plan_de_trabajo_miembro')}}">Planes de trabajo</a></li>
-                                <li><a href="{{url_for('miembro_estado_membresias')}}">Membresias</a></li>
+                                <li><a href="#">Reservas</a></li>
+                                <li><a href="#">Planes de trabajo</a></li>
+                                <li><a href="#">Membresias</a></li>
                                 <li><a href="#">Mi proceso</a></li>
                             </ul>
                         </li>
@@ -41,13 +41,36 @@
         <h6 class="title_perfil">juanr@gmail.com</h6>
     </div>
     <div class="containers_info">
-        <h3 class="edit_perfil">Información personal</h3>
-        <a style="margin-left: 150px" class="btn btn-primary ml-2" href="{{url_for('info_personal_user')}}">Cambiar</a>
+        <h3 class="edit_perfil">MI PLAN DE TRABAJO</h3>
     </div>
-    <div class="containers_info">
-        <h3 class="edit_perfil">Cambiar contraseña</h3>
-        <a style="margin-left: 155px"class="btn btn-primary ml-6" href="{{url_for('cambio_contrasena_user')}}">Cambiar</a>
-    </div>
+    <main id="tabla">
+        <div class="content-container">
+            <div class="col-md-5">
+                <form method="post">
+                    <table class="table table-striped table-bordered bg-white centrar-tabla">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Duración</th>
+                                <th>Tipo</th>
+                                <th>Proceso</th>
+                                <th>Entrenador</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td> Max musculos </td>
+                                <td> 2 meses </td>
+                                <td> musculos </td>
+                                <td> 60% de progreso </td>
+                                <td> Jose Silva </td>
+                        </tbody>
+                    </table>
+                    <a href="{{ url_for('reservas_miembro') }}" class="btn btn-primary btn-block">Volver</a>
+                </form>
+            </div>
+        </div>
+    </main>
     <a style="margin-left: 300px" href="{{ url_for('miembro') }}" class="btn btn-primary btn-block">Volver</a>
 </body>
 </html>

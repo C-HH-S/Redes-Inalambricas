@@ -376,6 +376,10 @@ table, td{
     margin-left: 220px;
 }
 
+.btn btn-primary ml-2{
+    margin-left: 250px;
+}
+
 .formulario_info{
     background: white;
     margin-top: 10%;

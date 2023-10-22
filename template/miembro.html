@@ -23,9 +23,9 @@
                         <li><a href="#">Servicios</a>
                             <ul>
                                 <li><a href="{{url_for('perfil')}}">Perfil</a></li>
-                                <li><a href="#">Reservas</a></li>
-                                <li><a href="#">Planes de trabajo</a></li>
-                                <li><a href="{{url_for('membresia_user')}}">Membresias</a></li>
+                                <li><a href="{{url_for('reservas_miembro')}}">Reservas</a></li>
+                                <li><a href="{{url_for('plan_de_trabajo_miembro')}}">Planes de trabajo</a></li>
+                                <li><a href="{{url_for('miembro_estado_membresia')}}">Membresia</a></li>
                                 <li><a href="#">Mi proceso</a></li>
                             </ul>
                         </li>
@@ -49,7 +49,7 @@
             <div class="columna columna1">
                 <h6>Plan:</h6>
                 <p><b>Mensual</b></p>
-                <br> <br> 
+                
                 <h6 class="datos">Estado de pago:</h6>
                 <p><b>Proximo por vencer!</b></p>
             </div>
@@ -58,7 +58,6 @@
                 <p>Nombre <b>Juan</b></p>
                 <p>Identificacion: <b>1736549876</b></p>
                 <p>Direccion <b>cl 45# 18-30</b></p>
-                <button class="btn btn-primary boton_edit">Editar</button>
             </div>
         </div>
 </body>
