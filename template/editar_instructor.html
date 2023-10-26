@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Instructor</title>
+    <link rel="stylesheet" type="text/css" href="../static/CSS/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+        crossorigin="anonymous">
+</head>
+
+<body>
+    <header>
+        <div class="container__menu">
+            <div class="menu">
+                <nav>
+                    <ul>
+                        <li><a href="#" id="selected">Inicio</a></li>
+                        <li><a href="#">Servicios</a>
+                            <ul>
+                                <li><a href="{{ url_for('gestion_usuarios') }}">Gestión de usuarios</a></li>
+                                <li><a href="#">Gestión de máquinas</a></li>
+                                <li><a href="#">Gestión de nómina</a></li>
+                                <li><a href="#">Gestión de membresias</a></li>
+                                <li><a href="#">Gestión de instructores</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#">Nosotros</a></li>
+                        <li><a href="#">Contactos</a></li>
+                        <li class="admin">
+                            <h6>Admin</h6>
+                        </li>
+                        <li class="user"><img src="../static/img/ic_person.png" alt=""></li>
+                        <li><a href="{{ url_for('login') }}"></a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+    <h1 class="titleMembresia">EDITAR INSTRUCTOR</h1>
+    <div class="formulario_info">
+        <form action="">
+            <fieldset>
+                <legend class="fw-bold">Información Personal</legend>
+                <hr>
+                <div class="form-group"></div>
+                <label for="nombre">Nombre de instructor:</label>
+                <input type="text" id="nombre" name="nombre" required class="form-control">
+
+                <label for="apellido">Apellido de instructor:</label>
+                <input type="text" id="apellido" name="apellido" required class="form-control">
+
+                <label for="edad">Edad:</label>
+                <input type="number" id="edad" name="edad" required class="form-control">
+
+                <label for="correo">Correo:</label>
+                <input type="text" id="correo" name="correo" required class="form-control">
+
+                <label for="telefono">Teléfono:</label>
+                <input type="number" id="telefono" name="telefono" required class="form-control">
+
+                <label for="horas">Horas Trabajadas:</label>
+                <input type="number" id="horas" name="horas" required class="form-control">
+            </fieldset>
+            <legend class="fw-bold mt-4">Horario</legend>
+            <hr>
+            <label for="dias">Días:</label>
+            <select class="form-select" name="dias" id="dias">
+                <option value="lun_mier">Lunes - Miercoles</option>
+                <option value="mar_juev">Martes - Jueves</option>
+                <option value="vier_dom">Viernes - Domingo</option>
+                <option value="sab_mar">Sabado - Martes</option>
+            </select>
+            <br>
+            <label for="hora">Hora:</label>
+            <select class="form-select" name="fecha" id="hora">
+                <option value="horario1">5:00 AM - 9:00 AM</option>
+                <option value="horario2">9:00 AM - 2:00 PM</option>
+                <option value="horario3">2:00 PM - 6:00 PM</option>
+                <option value="horario4">6:00 PM - 10:00 PM</option>
+            </select>
+            <br><br>
+
+            <button type="submit" class="btn btn-primary btn-block">Editar Instructor</button>
+            <a href="{{ url_for('gestion_usuarios') }}" class="btn btn-primary btn-block">Volver</a>
+        </form>
+    </div>
+
+</body>
+
+</html>
