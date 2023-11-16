@@ -25,12 +25,12 @@
                                 <li><a href="{{ url_for('gestion_usuarios') }}">Gestión de usuarios</a></li>
                                 <li><a href="{{ url_for('gestion_maquinas') }}">Gestión de máquinas</a></li>
                                 <li><a href="#">Gestión de nómina</a></li>
-                                <li><a href="{{ url_for('membresia') }}">Gestión de membresias</a></li>
+                                <li><a href="{{ url_for('gestion_membresias') }}">Gestión de membresias</a></li>
                                 <li><a href="#">Gestión de instructores</a></li>
                             </ul>
                         </li>
-                        <li><a href="#">Nosotros</a></li>
-                        <li><a href="#">Contactos</a></li>
+                        <li><a href="{{ url_for('NOSOTROS') }}">Nosotros</a></li>
+                        <li><a href="{{ url_for('CONTACTOS') }}">Contactos</a></li>
                         <li class="admin"><h6>Admin</h6></li>
                         <li class="user"><img src="/static/img/ic_person.png" alt=""></li>
                         <li><a href="{{ url_for('login') }}"></a></li>

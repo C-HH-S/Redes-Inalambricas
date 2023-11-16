@@ -52,6 +52,7 @@
                 <table class="table table-striped table-bordered bg-white centrar-tabla">
                     <thead>
                         <tr>
+                            <th>Identificación</th>
                             <th>Nombre</th>
                             <th>Apellido</th>
                             <th>Edad</th>
@@ -64,6 +65,7 @@
                     <tbody>
                         {% for m in miembros %}
                         <tr>
+                            <td>{{ m.0 }}</td>
                             <td>{{ m.1 }}</td>
                             <td>{{ m.2 }}</td>
                             <td>{{ m.3 }}</td>

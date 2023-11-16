@@ -62,6 +62,7 @@
                         <h2>Resultados de la búsqueda:</h2>
                         <ul>
                             {% for m in resultados %}
+                            <li>Id Maquina: {{ m[0] }}</li>
                             <li>Nombre: {{ m[1] }}</li>
                             <li>Estado:
                                 {% if m.2 == 1 %}
@@ -69,11 +70,10 @@
                                     {% else %}
                                     MAL ESTADO
                                     {% endif %}
-                            <li>Registro: {{ m[3] }}</li>
                             <li>Disponibilidad: {% if m[4] == 1 %}
-                                Activo
+                                Disponible
                                 {% else %}
-                                Inactivo
+                                No disponible
                                 {% endif %}
                             </li>
                             <br>

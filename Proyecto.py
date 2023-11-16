@@ -1,6 +1,7 @@
 from flask_mysqldb import MySQL
-from flask import Flask, jsonify, render_template, request, redirect, url_for, flash
+from flask import Flask, session ,jsonify, render_template, request, redirect, url_for, flash
 import mysql.connector
+from werkzeug.security import check_password_hash
 
 app = Flask(__name__, static_folder='static', template_folder='template')
 
@@ -9,7 +10,7 @@ app = Flask(__name__, static_folder='static', template_folder='template')
 app.config['MYSQL_HOST'] = "localhost"
 app.config['MYSQL_USER'] = "root"
 app.config['MYSQL_PASSWORD'] = ""
-app.config['MYSQL_DB'] = "bd_gimnasio"
+app.config['MYSQL_DB'] = "bd_gimnasio1"
 mysql = MySQL(app)
 
 # Inicializar sesion
@@ -23,23 +24,57 @@ users_db = [{'nombre': 'maria', 'apellido': 'lopez', 'edad': '23', 'correo': 'ma
             {'nombre': 'ana', 'apellido': 'cruz', 'edad': '45', 'correo': 'ana@cruz', 'telefono': '5678908767', 'contraseña': '002'}]
 
 
-# Ruta para la página de inicio de sesión
-@app.route('/', methods=['GET', 'POST'])
+# Ruta para la página de inicio de sesiónfrom werkzeug.security import check_password_hash
+
+@app.route('/login', methods=['POST'])
 def login():
-    if request.method == 'POST':
-        nombre = request.form['nombre']
-        contraseña = request.form['contraseña']
-        usuario = authenticate_user(nombre, contraseña)
-        if usuario:
-            if usuario['nombre'] == 'maria' and usuario['contraseña'] == '000':
-                return redirect('/administrador')
-            if usuario['nombre'] == 'jose' and usuario['contraseña'] == '001':
-                return redirect('/entrenador')
-            if usuario['nombre'] == 'ana' and usuario['contraseña'] == '002':
-                return redirect('/miembro')
-        else:
-            return 'Error: Usuario o contraseña incorrectos'
-    return render_template('login.html')
+    identificacion = request.form['identificacion']
+    contrasena = request.form['contrasena']
+
+    # Consulta para buscar en ambas tablas
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT 'miembro' AS tipo, IDENTIFICACION, INFO_ACCESO, ROL
+        FROM login_miembro
+        WHERE IDENTIFICACION = %s
+        UNION
+        SELECT 'empleado' AS tipo, IDENTIFICACION_EMPLEADO, INFO_ACCESO, ROL
+        FROM login_empleado
+        WHERE IDENTIFICACION_EMPLEADO = %s
+    """, (identificacion, identificacion))
+    
+    # Obtener resultados de la primera consulta
+    resultados = cur.fetchall()
+
+    # Verificar si se encontraron resultados
+    if resultados:
+        # Se encontró el usuario en alguna tabla, ahora obtenemos la contraseña
+        tipo_usuario, identificacion, info_acceso, rol = resultados[0]
+
+        # Segunda consulta para obtener la contraseña
+        if tipo_usuario == 'miembro':
+            cur.execute("SELECT CONTRASENA FROM miembros WHERE IDENTIFICACION = %s", (identificacion,))
+        elif tipo_usuario == 'empleado':
+            cur.execute("SELECT CONTRASENA FROM empleados WHERE IDENTIFICACION_EMPLEADO = %s", (identificacion,))
+
+        # Obtener la contraseña
+        resultado_contraseña = cur.fetchone()
+
+        # Verificar la contraseña
+        if resultado_contraseña and resultado_contraseña[0] == contrasena:
+            # Contraseña válida, redireccionar según el rol
+            if rol == 'administrador':
+                return redirect(url_for('vista_administrador'))
+            elif rol == 'miembro':
+                return redirect(url_for('vista_miembro'))
+            elif rol == 'instructor':
+                return redirect(url_for('vista_instructor'))
+        
+    # Si no se cumple ninguna condición anterior, redireccionar a una página de error o mostrar un mensaje
+    return redirect(url_for('pagina_de_error'))
+
+
+
 
 # Función para autenticar al usuario
 def authenticate_user(nombre, contraseña):
@@ -106,6 +141,14 @@ def añadir_maquina():
 def ver_historial():
     return render_template('vista_historial_maquinaria.html')
 
+# Ruta para el panel de nosotros
+@app.route('/NOSOTROS')
+def NOSOTROS():
+    return render_template('NOSOTROS.html')
+
+@app.route('/CONTACTOS')
+def CONTACTOS():
+    return render_template('CONTACTOS.html')
 
 
 
@@ -274,7 +317,7 @@ def editar_miembro():
 @app.route("/edit/<string:id>")
 def buscarid(id):
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM miembros WHERE id = %s', (id,))
+    cur.execute('SELECT * FROM miembros WHERE IDENTIFICACION = %s', (id,))
     data = cur.fetchall()
    # mysql.connection.commit()
    # flash ('miembro editado correctamente')
@@ -293,7 +336,7 @@ def getid(id):
         contraseña = request.form['contraseña']
 
     cur = mysql.connection.cursor()
-    cur.execute('UPDATE miembros SET nombre = %s, apellido = %s, edad = %s, correo = %s, telefono = %s, contraseña = %s WHERE id = %s',
+    cur.execute('UPDATE miembros SET NOMBRE = %s, APELLIDO = %s, EDAD = %s, CORREO = %s, TELEFONO = %s, CONTRASENA = %s WHERE IDENTIFICACION = %s',
                 (nombre, apellido, edad, correo, telefono, contraseña, id))
     mysql.connection.commit()
     flash('miembro editado correctamente')
@@ -312,11 +355,18 @@ def agregar_usuario():
         telefono = request.form['telefono']
         contraseña = request.form['contraseña']
         estado = request.form['estado']
-
+        identificacion = request.form['identificacion']
+       
         # Agregar el usuario a la base de datos
         cur = mysql.connection.cursor()
-        cur.execute('INSERT INTO miembros (nombre, apellido, edad, correo, telefono, contraseña, estado) VALUES (%s, %s, %s, %s, %s, %s, %s)',
-                    (nombre, apellido, edad, correo, telefono, contraseña, estado))
+
+        cur.execute('SET foreign_key_checks = 0;')
+
+        cur.execute('INSERT INTO miembros (IDENTIFICACION, NOMBRE, APELLIDO, EDAD, CORREO, TELEFONO, CONTRASENA, ESTADO) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
+            (identificacion, nombre, apellido, edad, correo, telefono, contraseña, estado))
+
+        
+        
         mysql.connection.commit()
         flash('Usuario agregado correctamente')
 
@@ -332,9 +382,9 @@ def buscar_miembro():
     data = None
     if request.method == 'POST':
         # Obtén el término de búsqueda del formulario
-        nombre = request.form.get('nombre')
+        identificacion = request.form.get('identificacion')
         cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM miembros WHERE LOWER(nombre) = %s", (nombre,))
+        cur.execute("SELECT * FROM miembros WHERE IDENTIFICACION = %s", (identificacion,))
         data = cur.fetchall()
         cur.close()
         if data:
@@ -350,7 +400,7 @@ def buscar_miembro():
 def agregar_maquina():
     if request.method == 'POST':
         # Obtener los datos del formulario
-        registro = request.form['registro']
+        #registro = request.form['registro']
         nombre = request.form['nombre']
         estado = request.form['estado']
         proveedor = request.form['proveedor']
@@ -358,15 +408,25 @@ def agregar_maquina():
         fechaCompra = request.form['fechaCompra']
         disponibilidad = request.form['disponibilidad']
 
-        # Agregar el usuario a la base de datos
-        cur = mysql.connection.cursor()
-        cur.execute('INSERT INTO historial_maquinaria (IdRegistro, Fecha_Compra, Precio, Proveedor) VALUES (%s, %s, %s,%s)',
-                    (registro, fechaCompra, precio, proveedor))
-        cur.execute('INSERT INTO maquinas (IdRegistro, nombre, estado, disponibilidad) VALUES (%s, %s, %s,%s)',
-                    (registro, nombre, estado, disponibilidad))
-        mysql.connection.commit()
-        flash('Máquina agregada correctamente')
+# Agregar el usuario a la base de datos
+    cur = mysql.connection.cursor()
+    cur.execute('SET foreign_key_checks = 0;')
+    cur.execute('INSERT INTO maquina (NOMBRE, ID_ESTADO_MAQUINA, ID_DISPONIBILIDAD_MAQUINARIA) VALUES (%s, %s, %s)',
+                (nombre, estado, disponibilidad))
+    cur.execute('SELECT LAST_INSERT_ID()')
+    id_maquina = cur.fetchone()[0]
 
+    cur.execute('INSERT INTO proveedor_maquinaria (NOMBRE) VALUES (%s)',
+                (proveedor,))
+    cur.execute('SELECT LAST_INSERT_ID()')
+    id_proveedor = cur.fetchone()[0]
+
+    cur.execute('INSERT INTO historial_maquinaria (FECHA_COMPRA, PRECIO, ID_PROVEEDOR, ID_MAQUINA) VALUES (%s, %s, %s, %s)',
+                (fechaCompra, precio, id_proveedor, id_maquina))
+
+
+    mysql.connection.commit()
+    flash('Máquina agregada correctamente')
     return render_template('agregar_maquina.html')
 
 
@@ -375,7 +435,7 @@ def agregar_maquina():
 def lista_maquinas():
     data = None
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM maquinas')
+    cur.execute('SELECT * FROM maquina')
     data = cur.fetchall()
     mysql.connection.commit()
     return render_template('lista_maquinas.html', miembros=data)
@@ -417,7 +477,12 @@ def cambiar_estado():
 @app.route("/historial/<id>")
 def gethistorial(id):
         cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM historial_maquinaria WHERE IdRegistro =%s", (id,))
+        cur.execute("""
+        SELECT historial_maquinaria.*, proveedor_maquinaria.NOMBRE AS NombreProveedor
+        FROM historial_maquinaria
+        LEFT JOIN proveedor_maquinaria ON historial_maquinaria.ID_PROVEEDOR = proveedor_maquinaria.ID_PROVEEDOR
+        WHERE historial_maquinaria.ID_MAQUINA = %s
+        """, (id,))
         data = cur.fetchall()
         cur.close()
         flash('Historial de máquina encontrado correctamente')
@@ -432,7 +497,7 @@ def buscar_maquina():
         # Obtén el término de búsqueda del formulario
         nombre = request.form.get('nombre')
         cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM maquinas WHERE LOWER(nombre) = %s", (nombre,))
+        cur.execute("SELECT * FROM maquina WHERE LOWER(nombre) = %s", (nombre,))
         data = cur.fetchall()
         cur.close()
         if data:

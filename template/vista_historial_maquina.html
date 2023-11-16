@@ -58,10 +58,10 @@
                 <h2>Resultados de la búsqueda:</h2>
                 <ul>
                     {% for m in resultados %}
-                    <li>Registro: {{ m[0] }}</li>
+                    <li>Id Maquina: {{ m[0] }}</li>
                     <li>Fecha de compra: {{ m[1]}}</li>
                     <li>Precio: {{ m[2] }}</li>
-                    <li>Proveedor: {{ m[3] }}</li>
+                    <li>Proveedor: {{ m[6] }}</li>
                     {% endfor %}
                 </ul>
                 {% else %}
