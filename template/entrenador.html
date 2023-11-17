@@ -22,17 +22,16 @@
                         <li><a href="#" id="selected">Inicio</a></li>
                         <li><a href="#">Servicios</a>
                             <ul>
-                                <li><a href="#">Perfil</a></li>
-                                <li><a href="#">Cargar horas</a></li>
-                                <li><a href="#">Planes de trabajo</a></li>
-                                <li><a href="#">...</a></li>
-                                <li><a href="#">...</a></li>
+                                <li><a href="{{ url_for('perfil_instructor') }}">Perfil</a></li>
+                                <li><a href="">Asignar Plan de Trabajo</a></li>
                             </ul>
                         </li>
                         <li><a href="#">Nosotros</a></li>
                         <li><a href="#">Contactos</a></li>
-                        <li class="admin"><h6>Admin</h6></li>
-                        <li class="user"><img src="/static/img/ic_person.png" alt=""></li>
+                        <li class="admin">
+                            <h6>María</h6>
+                        </li>
+                        <li class="user"><img src="../static/img/ic_person.png" alt=""></li>
                         <li><a href="{{ url_for('login') }}"></a></li>
                     </ul>
                 </nav>

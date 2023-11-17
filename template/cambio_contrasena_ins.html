@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gimanasio</title>
-    <link rel="stylesheet" type="text/css" href="../static/CSS/style.css">
+    <link rel="stylesheet" type="text/css" href="static\CSS\style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
         rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
         crossorigin="anonymous">
@@ -20,7 +20,7 @@
                         <li><a href="#" id="selected">Inicio</a></li>
                         <li><a href="#">Servicios</a>
                             <ul>
-                                <li><a href="">Perfil</a></li>
+                                <li><a href="{{ url_for('perfil_instructor') }}">Perfil</a></li>
                                 <li><a href="">Asignar Plan de Trabajo</a></li>
                             </ul>
                         </li>
@@ -36,25 +36,37 @@
             </div>
         </div>
     </header>
-    <div class="form_password">
-        <h1 class="edit_perfil">Cambiar contraseña</h1>
-        <hr>
-        <form action="">
-            <label for="current_password"><b>Contraseña actual</b></label>
-            <input class="form-control" type="password" name="current_password" id="current_password">
-            <br>
-            <label for="new_password"><b>Nueva contraseña</b></label>
-            <input class="form-control" type="password" name="new_password" id="new_password">
-            <br>
-            <label for="confirm_password"><b>Confirmar nueva contraseña</b></label>
-            <input class="form-control" type="password" name="confirm_password" id="confirm_password">
-            <br>
-            <div class="container_botones">
-                <a class="btn btn-primary ml-6 me-3">Guardar</a>
-                <a href="{{ url_for('gestion_usuarios') }}" class="btn btn-primary btn-block">Volver</a>
-            </div>
-        </form>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages%}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{message}}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <div class="container">
+        <div class="form_password">
+            <h1 class="edit_perfil">Cambiar contraseña</h1>
+            <hr>
+            <form action="/actualizarcontrasenains/{{info_empleado[0]}}"  method="POST">
+                <h6><b>Contraseña actual</b></h6>
+                <input class="campo" type="password" name="currend_password" id="currend_password">
+                <br>
+                <h6><b>Nueva contraseña</b></h6>
+                <input class="campo" type="password" name="new_password" id="new_password">
+                <br>
+                <h6><b>Confirmar nueva contraseña</b></h6>
+                <input class="campo" type="password" name="confirm_password" id="confirm_password">
+                <br>
+                <div class="container_botones">
+                    <button type="submit" class="btn btn-primary btn-block">Guardar</button>
+                    <a style="margin-left: 50px" href="{{ url_for('perfil_instructor') }}"
+                        class="btn btn-primary btn-block">Volver</a>
+                </div>
+            </form>
+        </div>
     </div>
 </body>
-
-</html>

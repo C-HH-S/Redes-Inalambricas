@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agregar Instructor</title>
-    <link rel="stylesheet" type="text/css" href="../static/CSS/style.css">
+    <title>Perfil</title>
+    <link rel="stylesheet" type="text/css" href="static\CSS\style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
         rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
         crossorigin="anonymous">
@@ -20,7 +20,7 @@
                         <li><a href="#" id="selected">Inicio</a></li>
                         <li><a href="#">Servicios</a>
                             <ul>
-                                <li><a href="">Perfil</a></li>
+                                <li><a href="{{ url_for('perfil_instructor') }}">Perfil</a></li>
                                 <li><a href="">Asignar Plan de Trabajo</a></li>
                             </ul>
                         </li>
@@ -36,34 +36,47 @@
             </div>
         </div>
     </header>
-    <h1 class="titleMembresia">EDITAR INFORMACIÓN PERSONAL</h1>
-    <div class="formulario_info">
-        <form action="">
-            <fieldset>
-                <legend class="fw-bold">Información Personal</legend>
-                <hr>
-                <div class="form-group"></div>
-                <label for="nombre">Nombre:</label>
-                <input type="text" id="nombre" name="nombre" required class="form-control">
 
-                <label for="apellido">Apellido:</label>
-                <input type="text" id="apellido" name="apellido" required class="form-control">
-
-                <label for="edad">Edad:</label>
-                <input type="number" id="edad" name="edad" required class="form-control">
-
-                <label for="correo">Correo:</label>
-                <input type="text" id="correo" name="correo" required class="form-control">
-
-                <label for="telefono">Teléfono:</label>
-                <input type="number" id="telefono" name="telefono" required class="form-control">
-
-                <br>
-                <button type="submit" class="btn btn-primary btn-block">Guardar Cambios</button>
-                <a href="{{ url_for('gestion_usuarios') }}" class="btn btn-primary btn-block">Volver</a>
-        </form>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages%}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{message}}
     </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
 
+    <div class="container">
+        <div class="formulario_info">
+            <h1 class="edit_perfil">Información Personal</h1>
+            <hr>
+            <form action="/actualizar_ins/{{info_empleado[0]}}"  method="POST">
+                <h6><b>Nombre</b></h6>
+                <input class="campo" type="text" name="nombre" id="nombre" value="{{ info_empleado[1] }}">
+                <br>
+                <h6><b>Apellido</b></h6>
+                <input class="campo" type="text" name="apellido" id="apellido" value="{{ info_empleado[2] }}">
+                <br>
+                <h6><b>Edad</b></h6>
+                <input class="campo" type="text" name="edad" id="edad" value="{{ info_empleado[3] }}">
+                <br>
+                <h6><b>Genero</b></h6>
+                <select id="genero" name="genero" value="{{ info_empleado[5] }}" required class="form-control">
+                    <option value="{{ info_empleado[5] }}">Actualmente: {{ info_empleado[5] }}</option>
+                    <option value="Femenino">Femenino</option>
+                    <option value="Masculino">Masculino</option>
+                    <option value="Otro">Otro</option>
+                </select>
+                <br>
+                <h6><b>Correo electronico</b></h6>
+                <input class="campo" type="email" name="correo" id="correo" value="{{ info_empleado[4] }}">
+                <br>
+                <button type="submit" class="btn btn-primary ml-6">Actualizar Datos</button>
+                <a href="{{ url_for('perfil_instructor') }}" class="btn btn-primary btn-block">Volver</a>
+            </form>
+        </div>
+    </div>
 </body>
 
 </html>

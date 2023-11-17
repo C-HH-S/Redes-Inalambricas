@@ -30,7 +30,9 @@
             </li>
             <li><a href="#">Nosotros</a></li>
             <li><a href="#">Contactos</a></li>
-            <li class="admin"><h6>Admin</h6></li>
+            <li class="admin">
+              <h6>Admin</h6>
+            </li>
             <li class="user"><img src="/static/img/ic_person.png" alt=""></li>
             <li><a href="{{ url_for('login') }}"></a></li>
           </ul>
@@ -53,38 +55,39 @@
     <div class="content-container">
       <div class="col-md-5">
         <form method="POST">
-          <div class="form-group"></div>
-          <label for="identificacion">Número de identificación:</label>
-          <input type="text" id="identificacion" name="identificacion" required class="form-control">
+          <div class="form-group">
+            <label for="identificacion">Número de identificación:</label>
+            <input type="text" id="identificacion" name="identificacion" required class="form-control">
 
-          <div class="form-group"></div>
-          <label for="nombre">Nombre de usuario:</label>
-          <input type="text" id="nombre" name="nombre" required class="form-control">
+            <div class="form-group"></div>
+            <label for="nombre">Nombre de usuario:</label>
+            <input type="text" id="nombre" name="nombre" required class="form-control">
 
-          <label for="apellido">Apellido de usuario:</label>
-          <input type="text" id="apellido" name="apellido" required class="form-control">
+            <label for="apellido">Apellido de usuario:</label>
+            <input type="text" id="apellido" name="apellido" required class="form-control">
 
-          <label for="edad">Edad:</label>
-          <input type="number" id="edad" name="edad" required class="form-control">
+            <label for="edad">Edad:</label>
+            <input type="number" id="edad" name="edad" required class="form-control">
 
-          <label for="correo">Correo:</label>
-          <input type="text" id="correo" name="correo" required class="form-control">
+            <label for="correo">Correo:</label>
+            <input type="text" id="correo" name="correo" required class="form-control">
 
-          <label for="telefono">Telefono:</label>
-          <input type="number" id="telefono" name="telefono" required class="form-control">
+            <label for="telefono">Telefono:</label>
+            <input type="number" id="telefono" name="telefono" required class="form-control">
 
-          <label for="contraseña">Contraseña:</label>
-          <input type="text" id="contraseña" name="contraseña" required class="form-control">
+            <label for="contraseña">Contraseña:</label>
+            <input type="text" id="contraseña" name="contraseña" required class="form-control">
 
-          <label for="estado">Estado:</label>
-          <select id="estado" name="estado" required class="form-control">
-            <option value="1">Activo</option>
-            <option value="0">Inactivo</option>
-          </select>
-          <br><br>
+            <label for="estado">Estado:</label>
+            <select id="estado" name="estado" required class="form-control">
+              <option value="1">Activo</option>
+              <option value="0">Inactivo</option>
+            </select>
+            <br><br>
 
-          <button type="submit" class="btn btn-primary btn-block">Añadir Usuario</button>
-          <a href="{{ url_for('gestion_usuarios') }}" class="btn btn-primary btn-block">Volver</a>
+            <button type="submit" class="btn btn-primary btn-block">Añadir Usuario</button>
+            <a href="{{ url_for('gestion_usuarios') }}" class="btn btn-primary btn-block">Volver</a>
+          </div>
         </form>
       </div>
     </div>

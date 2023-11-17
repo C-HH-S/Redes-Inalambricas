@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
         rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
         crossorigin="anonymous">
 </head>
+
 <body>
     <header>
         <div class="container__menu">
@@ -21,13 +23,15 @@
                                 <li><a href="{{url_for('perfil')}}">Perfil</a></li>
                                 <li><a href="{{url_for('reservas_miembro')}}">Reservas</a></li>
                                 <li><a href="{{url_for('plan_de_trabajo_miembro')}}">Planes de trabajo</a></li>
-                                <li><a href="{{url_for('miembro_estado_membresias')}}">Membresias</a></li>
+                                <li><a href="{{url_for('miembro_estado_membresia')}}">Membresias</a></li>
                                 <li><a href="#">Mi proceso</a></li>
                             </ul>
                         </li>
                         <li><a href="#">Nosotros</a></li>
                         <li><a href="#">Contactos</a></li>
-                        <li class="admin"><h6>Juan</h6></li>
+                        <li class="admin">
+                            <h6>Juan</h6>
+                        </li>
                         <li class="user"><img src="/static/img/ic_person.png" alt=""></li>
                         <li><a href="{{ url_for('login') }}"></a></li>
                     </ul>
@@ -36,18 +40,23 @@
         </div>
     </header>
     <div>
-        <img class="img_user" src="/static/img/usuario_juan.PNG" alt="">
-        <h3 class="title_perfil">JUAN RAMIREZ</h3>
-        <h6 class="title_perfil">juanr@gmail.com</h6>
+        <img class="img_user" src="/static/img/usuario_{{ info_miembro[0] }}.PNG" alt="">
+        <h3 class="title_perfil">{{ info_miembro[1] }} {{ info_miembro[2] }}</h3>
+        <h6 class="title_perfil">{{ info_miembro[4] }}</h6>
     </div>
-    <div class="containers_info">
-        <h3 class="edit_perfil">Información personal</h3>
-        <a style="margin-left: 150px" class="btn btn-primary ml-2" href="{{url_for('info_personal_user')}}">Cambiar</a>
+    <div class="container">
+        <div class="containers_info">
+            <h3 class="edit_perfil">Información personal</h3>
+            <a style="margin-left: 150px" class="btn btn-primary ml-2"
+                href="{{url_for('info_personal_user')}}">Cambiar</a>
+        </div>
+        <div class="containers_info">
+            <h3 class="edit_perfil">Cambiar contraseña</h3>
+            <a style="margin-left: 155px" class="btn btn-primary ml-6"
+                href="{{url_for('cambio_contrasena_user')}}">Cambiar</a>
+        </div>
+        <a style="margin-left: 300px" href="{{ url_for('miembro') }}" class="btn btn-primary btn-block">Volver</a>
     </div>
-    <div class="containers_info">
-        <h3 class="edit_perfil">Cambiar contraseña</h3>
-        <a style="margin-left: 155px"class="btn btn-primary ml-6" href="{{url_for('cambio_contrasena_user')}}">Cambiar</a>
-    </div>
-    <a style="margin-left: 300px" href="{{ url_for('miembro') }}" class="btn btn-primary btn-block">Volver</a>
 </body>
+
 </html>

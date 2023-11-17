@@ -17,78 +17,101 @@ mysql = MySQL(app)
 app.secret_key = 'mysecretkey'
 
 
-# Base de datos ficticia para usuarios
-users_db = [{'nombre': 'maria', 'apellido': 'lopez', 'edad': '23', 'correo': 'maria@lopez', 'telefono': '2345678765', 'contraseña': '000'},
-            {'nombre': 'jose', 'apellido': 'torres', 'edad': '22',
-                'correo': 'jose@torres', 'telefono': '89765756876', 'contraseña': '001'},
-            {'nombre': 'ana', 'apellido': 'cruz', 'edad': '45', 'correo': 'ana@cruz', 'telefono': '5678908767', 'contraseña': '002'}]
-
-
 # Ruta para la página de inicio de sesiónfrom werkzeug.security import check_password_hash
-
-@app.route('/login', methods=['POST'])
+@app.route('/', methods=['GET', 'POST'])
 def login():
-    identificacion = request.form['identificacion']
-    contrasena = request.form['contrasena']
+    identificacion = None
+    contrasena = None
+    if request.method == 'POST':
+        identificacion = request.form['identificacion']
+        contrasena = request.form['contrasena']
 
-    # Consulta para buscar en ambas tablas
+        # Consulta para buscar en la tabla miembro
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT IDENTIFICACION, CONTRASENA FROM miembros WHERE IDENTIFICACION = %s", (identificacion,))
+        miembro = cur.fetchone()
+        cur.close()
+
+        # Consulta para buscar en la tabla empleado
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT IDENTIFICACION_EMPLEADO, CONTRASENA, ID_SALARIO_EMPLE FROM empleado WHERE IDENTIFICACION_EMPLEADO = %s", (identificacion,))
+        empleado = cur.fetchone()
+        cur.close()
+
+        if miembro and contrasena == miembro[1]:
+            # Iniciar sesión como miembro
+            session['identificacion'] = miembro[0]
+            session['rol'] = 'miembro'
+            # Almacena información del miembro en la sesión
+            session['info_usuario'] = obtener_info_miembro(miembro[0])
+            return redirect(url_for('miembro'))
+
+        elif empleado and contrasena == empleado[1]:
+            # Obtener el rol del empleado
+            cur = mysql.connection.cursor()
+            cur.execute("SELECT CARGO FROM salario_empleado WHERE ID_SALARIO_EMPLE = %s", (empleado[2],))
+            cargo = cur.fetchone()
+            cur.close()
+
+            if cargo:
+                # Iniciar sesión como administrador o instructor según el cargo
+                session['identificacion'] = empleado[0]
+                session['rol'] = 'administrador' if cargo[0] == 'administrador' else 'instructor'
+                # Almacena información del empleado en la sesión
+                session['info_usuario'] = obtener_info_empleado(empleado[0])
+                # Redirige a la vista correspondiente
+                if cargo[0] == 'Administrador':
+                    return redirect(url_for('administrador'))
+                elif cargo[0] == 'Instructor':
+                    return redirect(url_for('entrenador'))
+
+        flash('Credenciales incorrectas. Intenta de nuevo.')
+
+    return render_template('login.html')
+
+def obtener_info_miembro(identificacion):
     cur = mysql.connection.cursor()
-    cur.execute("""
-        SELECT 'miembro' AS tipo, IDENTIFICACION, INFO_ACCESO, ROL
-        FROM login_miembro
-        WHERE IDENTIFICACION = %s
-        UNION
-        SELECT 'empleado' AS tipo, IDENTIFICACION_EMPLEADO, INFO_ACCESO, ROL
-        FROM login_empleado
-        WHERE IDENTIFICACION_EMPLEADO = %s
-    """, (identificacion, identificacion))
-    
-    # Obtener resultados de la primera consulta
-    resultados = cur.fetchall()
+    cur.execute("SELECT IDENTIFICACION, NOMBRE, APELLIDO, EDAD, CORREO, TELEFONO, CONTRASENA, ESTADO FROM miembros WHERE IDENTIFICACION = %s", (identificacion,))
+    info_miembro = cur.fetchone()
+    cur.close()
+    return info_miembro
 
-    # Verificar si se encontraron resultados
-    if resultados:
-        # Se encontró el usuario en alguna tabla, ahora obtenemos la contraseña
-        tipo_usuario, identificacion, info_acceso, rol = resultados[0]
+def obtener_info_empleado(identificacion):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT IDENTIFICACION_EMPLEADO, NOMBRE, APELLIDO, EDAD, CORREO, GENERO, CONTRASENA, ESPECIALIDAD, HORARIO, ESTADO FROM empleado WHERE IDENTIFICACION_EMPLEADO = %s", (identificacion,))
+    info_empleado = cur.fetchone()
+    cur.close()
+    return info_empleado
 
-        # Segunda consulta para obtener la contraseña
-        if tipo_usuario == 'miembro':
-            cur.execute("SELECT CONTRASENA FROM miembros WHERE IDENTIFICACION = %s", (identificacion,))
-        elif tipo_usuario == 'empleado':
-            cur.execute("SELECT CONTRASENA FROM empleados WHERE IDENTIFICACION_EMPLEADO = %s", (identificacion,))
+# Ruta para el panel del miembro
+@app.route('/miembro')
+def miembro():
+    identificacion = session.get('identificacion')
+    info_miembro = obtener_info_miembro(identificacion)
 
-        # Obtener la contraseña
-        resultado_contraseña = cur.fetchone()
+    if info_miembro:
+        # Obtener las reservas del miembro actual
+        cur = mysql.connection.cursor()
+        cur.execute('''
+    SELECT c.*, r.ID_RESERVA, e.NOMBRE AS NOMBRE_INSTRUCTOR
+    FROM clase c
+    JOIN reserva_clase r ON c.ID_CLASE = r.ID_CLASE
+    JOIN empleado e ON c.INSTRUCTOR = e.IDENTIFICACION_EMPLEADO
+    WHERE r.IDENTIFICACION_MIEMBRO = %s
+''', (identificacion,))
+        reservas = cur.fetchall()
+        cur.close()
 
-        # Verificar la contraseña
-        if resultado_contraseña and resultado_contraseña[0] == contrasena:
-            # Contraseña válida, redireccionar según el rol
-            if rol == 'administrador':
-                return redirect(url_for('vista_administrador'))
-            elif rol == 'miembro':
-                return redirect(url_for('vista_miembro'))
-            elif rol == 'instructor':
-                return redirect(url_for('vista_instructor'))
-        
-    # Si no se cumple ninguna condición anterior, redireccionar a una página de error o mostrar un mensaje
-    return redirect(url_for('pagina_de_error'))
-
-
-
-
-# Función para autenticar al usuario
-def authenticate_user(nombre, contraseña):
-    for user in users_db:
-        if user['nombre'] == nombre and user['contraseña'] == contraseña:
-            return user
-    return None
+        return render_template('miembro.html', info_miembro=info_miembro, reservas=reservas)
+    else:
+        # Manejar el caso en que no se encuentre la información del miembro
+        flash('Error al obtener la información del miembro.')
+        return redirect(url_for('login'))
 
 
 # Ruta para el panel del administrador (administrador)
 @app.route('/administrador')
 def administrador():
-    for user in users_db:
-        print(user)
     return render_template('administrador.html')
 
 @app.route('/gestion_usuarios')
@@ -103,24 +126,167 @@ def gestion_maquinas():
 def gestion_membresias():
      return render_template('gestion_membresias.html')
 
-
-
-# Ruta para el panel del miembro (miembro)
-@app.route('/miembro')
-def miembro():
-    return render_template('miembro.html')
-
+# perfil de miembro
 @app.route('/perfil')
 def perfil():
-    return render_template('perfil.html')
+    identificacion = session.get('identificacion')
+    info_miembro = obtener_info_miembro(identificacion)
+    if info_miembro:
+        return render_template('perfil.html', info_miembro=info_miembro)
+    else:
+        # Manejar el caso en el que no se encuentre la información del miembro
+        flash('Error al obtener la información del miembro.')
 
+# perfil de instructor
+@app.route('/perfil_instructor')
+def perfil_instructor():
+    identificacion = session.get('identificacion')
+    info_empleado = obtener_info_empleado(identificacion)
+    if info_empleado:
+        return render_template('perfil_instructor.html', info_empleado=info_empleado)
+    else:
+        # Manejar el caso en el que no se encuentre la información del miembro
+        flash('Error al obtener la información del miembro.')
+    
+# formulario de edicion datos personales de miembro
 @app.route('/info_personal_user')
 def info_personal_user():
-    return render_template('info_personal_user.html')
+    identificacion = session.get('identificacion')
+    info_miembro = obtener_info_miembro(identificacion)
+    if info_miembro:
+        return render_template('info_personal_user.html', info_miembro=info_miembro)
+    else:
+        flash('Error al obtener la información del miembro.')
+        return redirect(url_for('perfil'))
 
+# formulario de edicion datos personales de instructor
+@app.route('/editar_info_personal_ins')
+def editar_info_personal_ins():
+    identificacion = session.get('identificacion')
+    info_empleado = obtener_info_empleado(identificacion)
+    if info_empleado:
+        return render_template('editar_info_personal_ins.html', info_empleado=info_empleado)
+    else:
+        flash('Error al obtener la información del instructor.')
+        return redirect(url_for('perfil_instructor'))
+
+# accion de editar datos miembro desde rol miembro
+@app.route("/actualizar/<id>", methods=['POST'])
+def getidentificacion(id):
+    identificacion = session.get('identificacion')
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        apellido = request.form['apellido']
+        edad = request.form['edad']
+        correo = request.form['correo']
+        telefono = request.form['telefono']
+
+        cur = mysql.connection.cursor()
+        cur.execute('UPDATE miembros SET NOMBRE = %s, APELLIDO = %s, EDAD = %s, CORREO = %s, TELEFONO = %s WHERE IDENTIFICACION = %s',
+                    (nombre, apellido, edad, correo, telefono, id))
+        mysql.connection.commit()
+        info_empleado = obtener_info_empleado(identificacion)
+        flash('Información editada correctamente')
+        return redirect(url_for('info_personal_user'))
+    
+# accion de editar datos instructor desde rol instructor
+@app.route("/actualizar_ins/<id>", methods=['POST'])
+def getidentificacion_ins(id):
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        apellido = request.form['apellido']
+        edad = request.form['edad']
+        correo = request.form['correo']
+        genero = request.form['genero']
+
+        cur = mysql.connection.cursor()
+        cur.execute('UPDATE empleado SET NOMBRE = %s, APELLIDO = %s, EDAD = %s, CORREO = %s, GENERO = %s WHERE IDENTIFICACION_EMPLEADO = %s',
+                    (nombre, apellido, edad, correo, genero, id))
+        mysql.connection.commit()
+        flash('Información editada correctamente')
+        return redirect(url_for('editar_info_personal_ins'))
+
+# cambiar contraseña rol miembro
 @app.route('/cambio_contrasena_user')
 def cambio_contrasena_user():
-    return render_template('cambio_contrasena_user.html')
+    identificacion = session.get('identificacion')
+    info_miembro = obtener_info_miembro(identificacion)
+    if info_miembro:
+        return render_template('cambio_contrasena_user.html', info_miembro=info_miembro)
+    else:
+        # Manejar el caso en el que no se encuentre la información del miembro
+        flash('Error al obtener la información del miembro.')
+
+# cambiar contraseña rol instructor
+@app.route('/cambio_contrasena_ins')
+def cambio_contrasena_ins():
+    identificacion = session.get('identificacion')
+    info_empleado = obtener_info_empleado(identificacion)
+    if info_empleado:
+        return render_template('cambio_contrasena_ins.html', info_empleado=info_empleado)
+    else:
+        # Manejar el caso en el que no se encuentre la información del miembro
+        flash('Error al obtener la información del miembro.')
+
+# accion de editar contraseña miembro desde rol miembro
+@app.route("/actualizarcontrasena/<id>", methods=['POST'])
+def actualizar_contrasena(id):
+    info_miembro = obtener_info_miembro(id)
+    if request.method == 'POST':
+        # Obtener las contraseñas del formulario
+        current_password = request.form['currend_password']
+        new_password = request.form['new_password']
+        confirm_password = request.form['confirm_password']
+        print('CONTRASEÑA ACTUAL:' + info_miembro[6])
+        # Validar que la contraseña actual sea correcta
+        if current_password != info_miembro[6]:
+            flash('La contraseña actual no es correcta.')
+            return redirect(url_for('cambio_contrasena_user'))
+
+        # Validar que la nueva contraseña y la confirmación coincidan
+        if new_password != confirm_password:
+            flash('La nueva contraseña y la confirmación no coinciden.')
+            return redirect(url_for('cambio_contrasena_user'))
+
+        # Realizar la actualización de la contraseña en la base de datos
+        cur = mysql.connection.cursor()
+        cur.execute('UPDATE miembros SET CONTRASENA = %s WHERE IDENTIFICACION = %s',
+                    (new_password, id))
+        mysql.connection.commit()
+        flash('Contraseña actualizada correctamente.')
+        info_miembro = obtener_info_miembro(id)
+
+    return redirect(url_for('cambio_contrasena_user'))
+
+# accion de editar contraseña miembro desde rol miembro
+@app.route("/actualizarcontrasenains/<id>", methods=['POST'])
+def actualizar_contrasena_ins(id):
+    info_empleado = obtener_info_empleado(id)
+    if request.method == 'POST':
+        # Obtener las contraseñas del formulario
+        current_password = request.form['currend_password']
+        new_password = request.form['new_password']
+        confirm_password = request.form['confirm_password']
+        print('CONTRASEÑA ACTUAL:' + info_empleado[6])
+        # Validar que la contraseña actual sea correcta
+        if current_password != info_empleado[6]:
+            flash('La contraseña actual no es correcta.')
+            return redirect(url_for('cambio_contrasena_ins'))
+
+        # Validar que la nueva contraseña y la confirmación coincidan
+        if new_password != confirm_password:
+            flash('La nueva contraseña y la confirmación no coinciden.')
+            return redirect(url_for('cambio_contrasena_ins'))
+
+        # Realizar la actualización de la contraseña en la base de datos
+        cur = mysql.connection.cursor()
+        cur.execute('UPDATE empleado SET CONTRASENA = %s WHERE IDENTIFICACION_EMPLEADO = %s',
+                    (new_password, id))
+        mysql.connection.commit()
+        flash('Contraseña actualizada correctamente.')
+        info_empleado = obtener_info_empleado(id)
+
+    return redirect(url_for('cambio_contrasena_ins'))
 
 @app.route('/membresia_user')
 def membresia_user():
@@ -212,56 +378,107 @@ def vista_asignar_membresia():
         #return render_template('membresia.html', data=rows)
     return render_template('vista_asignar_membresia.html')
 
-#vista estdo de membresia desde miembro
-@app.route('/miembro_estado_membresia')
-def miembro_estado_membresia():
-        #cur = mysql.connection.cursor()
-        #cur.execute("SELECT * FROM clientes")  
-        #rows = cur.fetchall()
-        #cur.close()
-        #return render_template('membresia.html', data=rows)
-    return render_template('miembro_estado_membresia.html')
-
 #vista de reservas desde miembro
 @app.route('/reservas_miembro')
 def reservas_miembro():
-        #cur = mysql.connection.cursor()
-        #cur.execute("SELECT * FROM clientes")  
-        #rows = cur.fetchall()
-        #cur.close()
-        #return render_template('membresia.html', data=rows)
-    return render_template('reservas_miembro.html')
+    identificacion = session.get('identificacion')
+    info_miembro = obtener_info_miembro(identificacion)
+    if info_miembro:
+        return render_template('reservas_miembro.html', info_miembro=info_miembro)
+    else:
+        # Manejar el caso en el que no se encuentre la información del miembro
+        flash('Error al obtener la información del miembro.')
 
 #reservar clase desde miembro
 @app.route('/reservar_clase')
 def reservar_clase():
-        #cur = mysql.connection.cursor()
-        #cur.execute("SELECT * FROM clientes")  
-        #rows = cur.fetchall()
-        #cur.close()
-        #return render_template('membresia.html', data=rows)
-    return render_template('reservar_clase.html')
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT clase.*, empleado.NOMBRE AS NOMBRE_INSTRUCTOR FROM clase INNER JOIN empleado ON clase.INSTRUCTOR = empleado.IDENTIFICACION_EMPLEADO")  
+        rows = cur.fetchall()
+        cur.close()
+        return render_template('reservar_clase.html', rows=rows)
+
+
+#accion de reservar clase desde miembro
+@app.route("/accion_reservar_clase/<id>", methods=['GET', 'POST'])
+def accion_reservar_clase(id):
+    identificacion = session.get('identificacion')
+
+    try:
+        # Verificar si el usuario ya ha reservado la clase
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT * FROM reserva_clase WHERE ID_CLASE = %s AND IDENTIFICACION_MIEMBRO = %s',
+                    (id, identificacion))
+        existing_reservation = cur.fetchone()
+
+        if existing_reservation:
+            flash('Ya has reservado esta clase anteriormente.')
+        else:
+            # Iniciar la transacción
+            cur.execute('START TRANSACTION')
+
+            # Realizar la inserción en la tabla reserva_clase
+            cur.execute('INSERT INTO reserva_clase (ID_CLASE, IDENTIFICACION_MIEMBRO) VALUES (%s, %s)',
+                        (id, identificacion))
+
+            # Confirmar la transacción
+            cur.execute('COMMIT')
+
+            flash('Clase agendada correctamente.')
+
+    except Exception as e:
+        # Manejar cualquier excepción que pueda ocurrir durante la transacción
+        cur.execute('ROLLBACK')
+        flash(f'Error al agendar la clase: {str(e)}')
+
+    finally:
+        # Cerrar el cursor después de realizar la operación
+        if cur:
+            cur.close()
+
+    return redirect(url_for('reservar_clase'))
+
+  
 
 #reservar maquina desde miembro
 @app.route('/reservar_maquina')
 def reservar_maquina():
-        #cur = mysql.connection.cursor()
-        #cur.execute("SELECT * FROM clientes")  
-        #rows = cur.fetchall()
-        #cur.close()
-        #return render_template('membresia.html', data=rows)
-    return render_template('reservar_maquina.html')
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT clase.*, empleado.NOMBRE AS NOMBRE_INSTRUCTOR FROM clase INNER JOIN empleado ON clase.INSTRUCTOR = empleado.IDENTIFICACION_EMPLEADO")  
+        rows = cur.fetchall()
+        cur.close()
+        return render_template('reservar_maquina.html', rows=rows)
 
-#plan de trabado de miembro
+#mostrar plan de trabajo de miembro
 @app.route('/plan_de_trabajo_miembro')
 def plan_de_trabajo_miembro():
-        #cur = mysql.connection.cursor()
-        #cur.execute("SELECT * FROM clientes")  
-        #rows = cur.fetchall()
-        #cur.close()
-        #return render_template('membresia.html', data=rows)
-    return render_template('plan_de_trabajo_miembro.html')
-       
+        identificacion = session.get('identificacion')
+        info_miembro = obtener_info_miembro(identificacion)
+        cur = mysql.connection.cursor()
+        cur.execute("""SELECT asignacion_pla_trabajo.*, planes_trabajo.NOMBRE AS NOMBRE_PLAN, planes_trabajo.DESCRIPCION AS DESCRIPCION_PLAN, empleado.NOMBRE AS NOMBRE_EMPLEADO
+                FROM asignacion_pla_trabajo
+                JOIN planes_trabajo ON asignacion_pla_trabajo.ID_PLAN = planes_trabajo.ID_PLAN
+                JOIN empleado ON asignacion_pla_trabajo.IDENTIFICACION_EMPLEADO = empleado.IDENTIFICACION_EMPLEADO
+                WHERE asignacion_pla_trabajo.ID_MIEMBRO_PLAN = %s;
+                """, (identificacion,))  
+        rows = cur.fetchall()
+        cur.close()
+        return render_template('plan_de_trabajo_miembro.html', rows=rows, info_miembro=info_miembro)
+
+#vista estdo de membresia desde miembro
+@app.route('/miembro_estado_membresia')
+def miembro_estado_membresia():
+        identificacion = session.get('identificacion')
+        info_miembro = obtener_info_miembro(identificacion)
+        cur = mysql.connection.cursor()
+        cur.execute("""SELECT m.* FROM miembros AS mi JOIN 
+                    membresia_miembros AS m ON mi.ID_MEMBRESIA = 
+                    m.ID_MEMBRESIA WHERE mi.IDENTIFICACION = %s;
+                """, (identificacion,))  
+        rows = cur.fetchall()
+        cur.close()
+        return render_template('miembro_estado_membresia.html', rows=rows, info_miembro=info_miembro)
+
 # Vista para eliminar usuario
 @app.route('/listado_usuarios', methods=['GET', 'POST'])
 def listado_usuarios():
