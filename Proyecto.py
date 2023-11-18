@@ -126,6 +126,48 @@ def gestion_maquinas():
 def gestion_membresias():
      return render_template('gestion_membresias.html')
 
+#plan de trabajo
+@app.route('/planes_trabajo_ins')
+def planes_trabajo_ins():
+    cur = mysql.connection.cursor()
+    cur.execute("""SELECT *
+                FROM miembros
+                WHERE IDENTIFICACION_EMPLEADO = 0
+                AND ID_MEMBRESIA != 0;
+                """)
+    data = cur.fetchall()
+    mysql.connection.commit()
+    return render_template('planes_trabajo_ins.html', miembros=data)
+
+#vista de asignar plan de trabajo
+@app.route('/vista_asignar_plan_trabajo/<idm>')
+def vista_asignar_plan_trabajo(idm):
+    cur = mysql.connection.cursor()
+    cur.execute("""SELECT *
+                FROM planes_trabajo
+                """)
+    data = cur.fetchall()
+    idm = idm
+    mysql.connection.commit()
+    print(data)
+    return render_template('vista_asignar_plan_trabajo.html', planes=data, idm=idm)
+
+# accion de asignar plan de trabajo
+@app.route("/asignar/<id>/<idm>", methods=['POST'])
+def getidclase(id, idm):
+    identificacion = session.get('identificacion')
+    idm = request.args.get('idm')
+    if request.method == 'POST':
+        fechainicio = request.form['fecha_inicio']
+        fechafin = request.form['fecha_fin']
+        cur = mysql.connection.cursor()
+        cur.execute("""INSERT INTO asignacion_pla_trabajo (ID_MIEMBRO_PLAN, ID_PLAN, 
+                    IDENTIFICACION_EMPLEADO, FECHA_INICIO, FECHA_FIN) VALUES (%s, %s, %s, %s, %s)""",
+                        (idm, id, identificacion,fechainicio,fechafin))
+        flash('Información editada correctamente')
+        return redirect(url_for('info_personal_user'))
+    
+
 # perfil de miembro
 @app.route('/perfil')
 def perfil():
@@ -295,7 +337,28 @@ def membresia_user():
 # Ruta para el panel del entrenador (entrenador)
 @app.route('/entrenador')
 def entrenador():
-    return render_template('entrenador.html')
+    identificacion = session.get('identificacion')
+    info_empleado = obtener_info_empleado(identificacion)
+
+    if info_empleado:
+        # Obtener las reservas del miembro actual
+        cur = mysql.connection.cursor()
+        cur.execute('''
+                    SELECT asignacion_pla_trabajo.*, planes_trabajo.NOMBRE AS NOMBRE_PLAN, planes_trabajo.DESCRIPCION AS DESCRIPCION_PLAN
+                    FROM asignacion_pla_trabajo
+                    JOIN planes_trabajo ON asignacion_pla_trabajo.ID_PLAN = planes_trabajo.ID_PLAN
+                    WHERE asignacion_pla_trabajo.IDENTIFICACION_EMPLEADO = %s;
+
+                ''', (identificacion,))
+        planestrabajo = cur.fetchall()
+        cur.close()
+
+        return render_template('entrenador.html', info_empleado=info_empleado, planestrabajo=planestrabajo)
+    else:
+        # Manejar el caso en que no se encuentre la información del miembro
+        flash('Error al obtener la información del miembro.')
+        return redirect(url_for('login'))
+
 
 # Ruta para el panel de añadir maquina
 @app.route('/agregar_maquina')
