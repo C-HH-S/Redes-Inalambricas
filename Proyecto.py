@@ -1,3 +1,4 @@
+import datetime
 from flask_mysqldb import MySQL
 from flask import Flask, session ,jsonify, render_template, request, redirect, url_for, flash
 import mysql.connector
@@ -10,7 +11,7 @@ app = Flask(__name__, static_folder='static', template_folder='template')
 app.config['MYSQL_HOST'] = "localhost"
 app.config['MYSQL_USER'] = "root"
 app.config['MYSQL_PASSWORD'] = ""
-app.config['MYSQL_DB'] = "bd_gimnasio1"
+app.config['MYSQL_DB'] = "bd_gimnasio2"
 mysql = MySQL(app)
 
 # Inicializar sesion
@@ -100,9 +101,17 @@ def miembro():
     WHERE r.IDENTIFICACION_MIEMBRO = %s
 ''', (identificacion,))
         reservas = cur.fetchall()
+        cur.execute('''
+    SELECT rm.*, m.NOMBRE AS nombre_maquina
+    FROM reserva_maquina rm
+    JOIN maquina m ON rm.ID_MAQUINA = m.ID_MAQUINA
+    WHERE rm.IDENTIFICACION_MIEMBRO = %s
+''', (identificacion,))
+        reservasm = cur.fetchall()
         cur.close()
 
-        return render_template('miembro.html', info_miembro=info_miembro, reservas=reservas)
+
+        return render_template('miembro.html', info_miembro=info_miembro, reservas=reservas, reservasm=reservasm)
     else:
         # Manejar el caso en que no se encuentre la información del miembro
         flash('Error al obtener la información del miembro.')
@@ -132,12 +141,78 @@ def planes_trabajo_ins():
     cur = mysql.connection.cursor()
     cur.execute("""SELECT *
                 FROM miembros
-                WHERE IDENTIFICACION_EMPLEADO = 0
-                AND ID_MEMBRESIA != 0;
+                WHERE ID_PLAN IS NULL
+                AND ID_MEMBRESIA <> 0
+                AND ESTADO <> 0
+                AND ID_ESTADO_MEM <> 0;
+                ;
                 """)
     data = cur.fetchall()
     mysql.connection.commit()
     return render_template('planes_trabajo_ins.html', miembros=data)
+
+# progreso plan de trabajo 
+@app.route('/proceso_plan_trabajo')
+def proceso_plan_trabajo():
+    identificacion = session.get('identificacion')
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT asignacion.*, empleado.NOMBRE AS nombre_empleado 
+                FROM asignacion_pla_trabajo asignacion 
+                JOIN empleado ON asignacion.IDENTIFICACION_EMPLEADO = 
+                empleado.IDENTIFICACION_EMPLEADO 
+                WHERE asignacion.ID_MIEMBRO_PLAN = %s;
+            """, (identificacion,))
+    
+    data = cur.fetchall()
+    cur.execute("""
+    SELECT *
+    FROM progreso_plan_trabajo
+    WHERE IDENTIFICACION_MIEMBRO = %s;
+    """, (identificacion,))
+    dataprogreso = cur.fetchall()
+    cur.close()
+    print(data)
+    # Verificar si hay datos en 'data'
+    if not data:
+        flash ('No hay plan trabajo para este miembro.')
+        return render_template('proceso_plan_trabajo.html', )
+
+    mysql.connection.commit()
+    return render_template('proceso_plan_trabajo.html', rows=data, progreso=dataprogreso)
+
+# Ruta para ingresar el progreso del plan de trabajo
+@app.route('/ingresar_progreso/<id>', methods=['GET', 'POST'])
+def ingresar_progreso(id):
+    identificacion = session.get('identificacion')
+
+    # Verifica si se encontró el ID_ASIG_PLAN
+    if id is None:
+        flash('No se encontró el plan de trabajo para ingresar progreso.', 'danger')
+        return redirect(url_for('miembro'))
+
+    if request.method == 'POST':
+        fecha_avance = request.form.get('fecha_avance')
+        descripcion_avance = request.form.get('descripcion_avance')
+        horas_trabajadas = request.form.get('horas_trabajadas')
+
+        # Insertar en la base de datos
+        try:
+            cur = mysql.connection.cursor()
+            cur.execute("""
+                INSERT INTO progreso_plan_trabajo (ID_ASIG_PLAN, IDENTIFICACION_MIEMBRO, FECHA_AVANCE, DESCRIPCION_AVANCE, HORAS_TRABAJADAS)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (id, identificacion, fecha_avance, descripcion_avance, horas_trabajadas))
+            
+            mysql.connection.commit()
+            cur.close()
+            flash('Progreso registrado correctamente.', 'success')
+            return redirect(url_for('proceso_plan_trabajo'))
+        except Exception as e:
+            flash(f'Error al registrar el progreso: {str(e)}', 'danger')
+
+    return render_template('ingresar_progreso.html', id=id )
+
 
 #vista de asignar plan de trabajo
 @app.route('/vista_asignar_plan_trabajo/<idm>')
@@ -147,26 +222,39 @@ def vista_asignar_plan_trabajo(idm):
                 FROM planes_trabajo
                 """)
     data = cur.fetchall()
-    idm = idm
+    global idmiembro 
+    idmiembro = idm
     mysql.connection.commit()
-    print(data)
-    return render_template('vista_asignar_plan_trabajo.html', planes=data, idm=idm)
+    return render_template('vista_asignar_plan_trabajo.html', planes=data)
 
 # accion de asignar plan de trabajo
-@app.route("/asignar/<id>/<idm>", methods=['POST'])
-def getidclase(id, idm):
+@app.route("/asignar/<id>", methods=['POST'])
+def getidclase(id):
     identificacion = session.get('identificacion')
-    idm = request.args.get('idm')
+
     if request.method == 'POST':
         fechainicio = request.form['fecha_inicio']
         fechafin = request.form['fecha_fin']
-        cur = mysql.connection.cursor()
-        cur.execute("""INSERT INTO asignacion_pla_trabajo (ID_MIEMBRO_PLAN, ID_PLAN, 
-                    IDENTIFICACION_EMPLEADO, FECHA_INICIO, FECHA_FIN) VALUES (%s, %s, %s, %s, %s)""",
-                        (idm, id, identificacion,fechainicio,fechafin))
-        flash('Información editada correctamente')
-        return redirect(url_for('info_personal_user'))
-    
+        try:
+            cur = mysql.connection.cursor()
+            cur.execute('SET foreign_key_checks = 0;')
+            cur.execute("""UPDATE miembros SET ID_PLAN = %s WHERE IDENTIFICACION = %s""", (id, idmiembro))
+            cur.execute("""INSERT INTO asignacion_pla_trabajo (ID_MIEMBRO_PLAN, ID_PLAN, 
+                        IDENTIFICACION_EMPLEADO, FECHA_INICIO, FECHA_FIN) VALUES (%s, %s, %s, %s, %s)""",
+                        (idmiembro, id, identificacion, fechainicio, fechafin))
+            mysql.connection.commit()
+            flash('Plan de trabajo asignado correctamente')
+            return redirect(url_for('planes_trabajo_ins'))
+        except Exception as e:
+            # Si hay algún error, puedes imprimirlo para depuración
+            print(f"Error al insertar en la base de datos: {str(e)}")
+            flash('Error al asignar plan de trabajo')
+            mysql.connection.rollback()  # Revertir la transacción
+        finally:
+            cur.close()
+
+    # Agrega un retorno para el caso en que la solicitud no sea POST
+    return "Algo para mostrar si la solicitud no es POST"
 
 # perfil de miembro
 @app.route('/perfil')
@@ -359,12 +447,6 @@ def entrenador():
         flash('Error al obtener la información del miembro.')
         return redirect(url_for('login'))
 
-
-# Ruta para el panel de añadir maquina
-@app.route('/agregar_maquina')
-def añadir_maquina():
-    return render_template('agregar_maquina.html')
-
 # Ruta para el panel de ver historial de maquinaria
 @app.route('/vista_historial_maquinaria')
 def ver_historial():
@@ -477,17 +559,25 @@ def accion_reservar_clase(id):
         if existing_reservation:
             flash('Ya has reservado esta clase anteriormente.')
         else:
-            # Iniciar la transacción
-            cur.execute('START TRANSACTION')
 
-            # Realizar la inserción en la tabla reserva_clase
-            cur.execute('INSERT INTO reserva_clase (ID_CLASE, IDENTIFICACION_MIEMBRO) VALUES (%s, %s)',
-                        (id, identificacion))
+            cur.execute("SELECT COUNT(*) FROM reserva_clase WHERE IDENTIFICACION_MIEMBRO = %s", (identificacion,))
+            cantidad_reservas = cur.fetchone()[0]
+            LIMITE_RESERVAS = 5
 
-            # Confirmar la transacción
-            cur.execute('COMMIT')
+            if cantidad_reservas >= LIMITE_RESERVAS:
+                flash('No se pueden hacer más de 5 reservas.')
+                # Puedes redirigir al usuario a una página de error o a donde prefieras
+            else:
+                cur.execute('START TRANSACTION')
 
-            flash('Clase agendada correctamente.')
+                # Realizar la inserción en la tabla reserva_clase
+                cur.execute('INSERT INTO reserva_clase (ID_CLASE, IDENTIFICACION_MIEMBRO) VALUES (%s, %s)',
+                            (id, identificacion))
+
+                # Confirmar la transacción
+                cur.execute('COMMIT')
+
+                flash('Clase agendada correctamente.')
 
     except Exception as e:
         # Manejar cualquier excepción que pueda ocurrir durante la transacción
@@ -502,15 +592,122 @@ def accion_reservar_clase(id):
     return redirect(url_for('reservar_clase'))
 
   
-
 #reservar maquina desde miembro
-@app.route('/reservar_maquina')
+@app.route("/reservar_maquina", methods=['GET', 'POST'])
 def reservar_maquina():
         cur = mysql.connection.cursor()
-        cur.execute("SELECT clase.*, empleado.NOMBRE AS NOMBRE_INSTRUCTOR FROM clase INNER JOIN empleado ON clase.INSTRUCTOR = empleado.IDENTIFICACION_EMPLEADO")  
+        cur.execute("""SELECT m.*, e.NOMBRE AS estado_nombre FROM maquina m 
+                    JOIN estado_maquinaria e ON m.ID_ESTADO_MAQUINA = e.ID_ESTADO_MAQUINA WHERE e.NOMBRE = 1
+                    """)  
         rows = cur.fetchall()
         cur.close()
         return render_template('reservar_maquina.html', rows=rows)
+
+from MySQLdb import IntegrityError
+
+# ...
+
+# Reservar máquina desde miembro
+@app.route('/vista_reservar_maquina/<id>', methods=['GET', 'POST'])
+def vista_reservar_maquina(id):
+        
+    identificacion = session.get('identificacion')
+
+    if request.method == 'POST':
+        identificacion = session.get('identificacion')
+        fecha = request.form.get('fecha')
+        horainicio = request.form.get('horainicio')
+        horafin = request.form.get('horafin')
+
+        try:
+            # Verificar si el usuario ya ha reservado la máquina
+            cur = mysql.connection.cursor()
+            cur.execute('SELECT * FROM reserva_maquina WHERE ID_MAQUINA = %s AND IDENTIFICACION_MIEMBRO = %s',
+                        (id, identificacion))
+            existing_reservations = cur.fetchall()
+
+            if existing_reservations:
+                flash('Ya has reservado esta máquina anteriormente.')
+                return redirect(url_for('reservar_maquina'))
+            else:
+                cur.execute("SELECT COUNT(*) FROM reserva_maquina WHERE IDENTIFICACION_MIEMBRO = %s", (identificacion,))
+                cantidad_reservas = cur.fetchone()[0]
+                LIMITE_RESERVAS = 5
+
+                if cantidad_reservas >= LIMITE_RESERVAS:
+                    flash('No se pueden hacer más de 5 reservas.')
+                    return redirect(url_for('reservar_maquina'))
+                else:
+                    cur = mysql.connection.cursor()
+                    cur.execute(
+                        'INSERT INTO reserva_maquina (ID_MAQUINA, IDENTIFICACION_MIEMBRO, FECHA, HORA_INICIO, HORA_FIN) VALUES (%s, %s, %s, %s, %s)',
+                        (id, identificacion, fecha, horainicio, horafin)
+                    )
+                    mysql.connection.commit()
+                    cur.close()
+                    flash('Reserva realizada correctamente.')
+                    return redirect(url_for('reservar_maquina'))
+        except IntegrityError as e:
+            flash('Error: Ya has reservado esta máquina anteriormente.')
+            return redirect(url_for('reservar_maquina'))
+        except Exception as e:
+            flash(f'Error al realizar la reserva: {str(e)}')
+            return redirect(url_for('reservar_maquina'))
+    else:
+        fecha = None
+        horainicio = None
+        horafin = None
+        cur = mysql.connection.cursor()
+        cur.execute("""SELECT m.*, e.NOMBRE AS estado_nombre 
+                    FROM maquina m 
+                    JOIN estado_maquinaria e ON m.ID_ESTADO_MAQUINA = e.ID_ESTADO_MAQUINA 
+                    WHERE m.ID_MAQUINA = %s 
+                    """, (id,))
+        rows = cur.fetchall()
+        cur.close()
+        return render_template('vista_reservar_maquina.html', rows=rows)
+
+# Acción de reservar máquina desde miembro
+@app.route("/accion_reservar_maquina/<id>", methods=['GET', 'POST'])
+def accion_reservar_maquina(id):
+    identificacion = session.get('identificacion')
+
+    if request.method == 'POST':
+        identificacion = session.get('identificacion')
+        fecha = request.form.get('fecha')
+        horainicio = request.form.get('horainicio')
+        horafin = request.form.get('horafin')
+
+    try:
+        # Verificar si el usuario ya ha reservado la máquina
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT * FROM reserva_maquina WHERE ID_MAQUINA = %s AND IDENTIFICACION_MIEMBRO = %s',
+                    (id, identificacion))
+        existing_reservations = cur.fetchall()
+
+        if existing_reservations:
+            flash('Ya has reservado esta máquina anteriormente.')
+        else:
+            cur.execute("SELECT COUNT(*) FROM reserva_maquina WHERE IDENTIFICACION_MIEMBRO = %s", (identificacion,))
+            cantidad_reservas = cur.fetchone()[0]
+            LIMITE_RESERVAS = 5
+
+            if cantidad_reservas >= LIMITE_RESERVAS:
+                flash('No se pueden hacer más de 5 reservas.')
+            else:
+                cur = mysql.connection.cursor()
+                cur.execute(
+                'INSERT INTO reserva_maquina (ID_MAQUINA, IDENTIFICACION_MIEMBRO, FECHA, HORA_INICIO, HORA_FIN) VALUES (%s, %s, %s, %s, %s)',
+                (id, identificacion, fecha, horainicio, horafin)
+            )
+            mysql.connection.commit()
+            cur.close()
+            flash('Reserva realizada correctamente.')
+            return redirect(url_for('reservas_miembro'))
+    except Exception as e:
+                flash(f'Error al realizar la reserva: {str(e)}')
+                return redirect(url_for('reservar_maquina'))
+
 
 #mostrar plan de trabajo de miembro
 @app.route('/plan_de_trabajo_miembro')
@@ -534,9 +731,11 @@ def miembro_estado_membresia():
         identificacion = session.get('identificacion')
         info_miembro = obtener_info_miembro(identificacion)
         cur = mysql.connection.cursor()
-        cur.execute("""SELECT m.* FROM miembros AS mi JOIN 
-                    membresia_miembros AS m ON mi.ID_MEMBRESIA = 
-                    m.ID_MEMBRESIA WHERE mi.IDENTIFICACION = %s;
+        cur.execute("""SELECT mi.*, m.*, em.FECHA_INICIO, em.FECHA_FIN
+                FROM miembros AS mi
+                JOIN membresia_precios AS m ON mi.ID_MEMBRESIA = m.ID_MEMBRESIA
+                JOIN estado_membresia AS em ON mi.ID_MEMBRESIA = em.ID_MEMBRESIA
+                WHERE mi.IDENTIFICACION  = %s;
                 """, (identificacion,))  
         rows = cur.fetchall()
         cur.close()
@@ -570,13 +769,13 @@ def cambiar_estado_miembro():
         miembro_id = request.form.get('miembro_id')
         # Realiza una consulta para obtener el estado actual del miembro
         cur = mysql.connection.cursor()
-        cur.execute("SELECT estado FROM miembros WHERE id = %s", (miembro_id,))
+        cur.execute("SELECT estado FROM miembros WHERE IDENTIFICACION = %s", (miembro_id,))
         estado_actual = cur.fetchone()
         print(estado_actual)
         # Cambia el estado (por ejemplo, de True a False o viceversa)
         nuevo_estado = not estado_actual[0]
         # Realiza la actualización en la base de datos
-        cur.execute("UPDATE miembros SET estado = %s WHERE id = %s", (nuevo_estado, miembro_id))
+        cur.execute("UPDATE miembros SET estado = %s WHERE IDENTIFICACION = %s", (nuevo_estado, miembro_id))
         mysql.connection.commit()
         cur.close()
         flash('Estado actualizado correctamente')
@@ -668,10 +867,10 @@ def buscar_miembro():
         data = cur.fetchall()
         cur.close()
         if data:
-            flash('Miembro encontrado.')
+            flash('¡Miembro encontrado!.')
             return render_template('buscar_miembro.html', resultados=data)
         else:
-            flash('No se encontraron miembros con ese nombre.')
+            flash('No se encontraron miembros con esa identificación.')
     return render_template('buscar_miembro.html')
 
 
@@ -679,8 +878,6 @@ def buscar_miembro():
 @app.route('/agregar_maquina', methods=['GET', 'POST'])
 def agregar_maquina():
     if request.method == 'POST':
-        # Obtener los datos del formulario
-        #registro = request.form['registro']
         nombre = request.form['nombre']
         estado = request.form['estado']
         proveedor = request.form['proveedor']
@@ -688,25 +885,45 @@ def agregar_maquina():
         fechaCompra = request.form['fechaCompra']
         disponibilidad = request.form['disponibilidad']
 
-# Agregar el usuario a la base de datos
-    cur = mysql.connection.cursor()
-    cur.execute('SET foreign_key_checks = 0;')
-    cur.execute('INSERT INTO maquina (NOMBRE, ID_ESTADO_MAQUINA, ID_DISPONIBILIDAD_MAQUINARIA) VALUES (%s, %s, %s)',
-                (nombre, estado, disponibilidad))
-    cur.execute('SELECT LAST_INSERT_ID()')
-    id_maquina = cur.fetchone()[0]
+        cur = mysql.connection.cursor()
 
-    cur.execute('INSERT INTO proveedor_maquinaria (NOMBRE) VALUES (%s)',
-                (proveedor,))
-    cur.execute('SELECT LAST_INSERT_ID()')
-    id_proveedor = cur.fetchone()[0]
+        # Verificar si el proveedor ya existe
+        cur.execute('SELECT ID_PROVEEDOR FROM proveedor_maquinaria WHERE NOMBRE = %s', (proveedor,))
+        resultado = cur.fetchone()
 
-    cur.execute('INSERT INTO historial_maquinaria (FECHA_COMPRA, PRECIO, ID_PROVEEDOR, ID_MAQUINA) VALUES (%s, %s, %s, %s)',
-                (fechaCompra, precio, id_proveedor, id_maquina))
+        if resultado:
+            # Si el proveedor existe, obtén el ID_PROVEEDOR
+            id_proveedor = resultado[0]
+        else:
+            # Si el proveedor no existe, inserta y obtén el ID_PROVEEDOR
+            cur.execute('INSERT INTO proveedor_maquinaria (NOMBRE) VALUES (%s)', (proveedor,))
+            mysql.connection.commit()
+            cur.execute('SELECT LAST_INSERT_ID()')
+            id_proveedor = cur.fetchone()[0]
+        
+        cur.execute('INSERT INTO disponibilidad_maquinaria (DISPONIBILIDAD) VALUES (%s)', (disponibilidad,))
+        cur.execute('SELECT LAST_INSERT_ID()')
+        id_dispo = cur.fetchone()[0]
+        cur.execute('INSERT INTO estado_maquinaria (NOMBRE) VALUES (%s)', (estado,))
+        cur.execute('SELECT LAST_INSERT_ID()')
+        id_estado = cur.fetchone()[0]
 
+        # Insertar en la tabla maquina
+        cur.execute('SET foreign_key_checks = 0;')
+        cur.execute('INSERT INTO maquina (NOMBRE, ID_ESTADO_MAQUINA, ID_DISPONIBILIDAD_MAQUINARIA) VALUES (%s, %s,%s)',
+                    (nombre, id_dispo, id_estado))
+        cur.execute('SELECT LAST_INSERT_ID()')
+        id_maquina = cur.fetchone()[0]
 
-    mysql.connection.commit()
-    flash('Máquina agregada correctamente')
+        # Insertar en la tabla historial_maquinaria
+        cur.execute('INSERT INTO historial_maquinaria (FECHA_COMPRA, PRECIO, ID_PROVEEDOR, ID_MAQUINA) VALUES (%s, %s, %s, %s)',
+                    (fechaCompra, precio, id_proveedor, id_maquina))
+
+        mysql.connection.commit()
+        cur.close()
+
+        flash('Máquina agregada correctamente')
+
     return render_template('agregar_maquina.html')
 
 
@@ -715,42 +932,59 @@ def agregar_maquina():
 def lista_maquinas():
     data = None
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM maquina')
+    cur.execute('SELECT m.ID_MAQUINA, m.NOMBRE, m.ID_ESTADO_MAQUINA, m.ID_DISPONIBILIDAD_MAQUINARIA, em.NOMBRE AS estado_nombre, dm.DISPONIBILIDAD AS disponibilidad_nombre FROM maquina m JOIN estado_maquinaria em ON m.ID_ESTADO_MAQUINA = em.ID_ESTADO_MAQUINA JOIN disponibilidad_maquinaria dm ON m.ID_DISPONIBILIDAD_MAQUINARIA = dm.ID_DISPONIBILIDAD_MAQUINARIA')
     data = cur.fetchall()
     mysql.connection.commit()
-    return render_template('lista_maquinas.html', miembros=data)
+    return render_template('lista_maquinas.html', maquinas=data)
 
 # Vista del estado de máquinas
 @app.route('/estado_maquinas', methods=['GET', 'POST'])
 def estado_maquinas():
     data = None
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM maquinas')
+
+    # Obtén los datos de la tabla maquina, incluyendo la llave foránea para estado y disponibilidad
+    cur.execute('SELECT m.ID_MAQUINA, m.NOMBRE, m.ID_ESTADO_MAQUINA, m.ID_DISPONIBILIDAD_MAQUINARIA, em.NOMBRE AS estado_nombre, dm.DISPONIBILIDAD AS disponibilidad_nombre FROM maquina m JOIN estado_maquinaria em ON m.ID_ESTADO_MAQUINA = em.ID_ESTADO_MAQUINA JOIN disponibilidad_maquinaria dm ON m.ID_DISPONIBILIDAD_MAQUINARIA = dm.ID_DISPONIBILIDAD_MAQUINARIA')
     data = cur.fetchall()
+
     mysql.connection.commit()
     return render_template('estado_maquinas.html', maquinas=data)
+
 
 # accion de editar estado de máquina
 @app.route('/cambiar_estado_maquina', methods=['POST'])
 def cambiar_estado():
     if request.method == 'POST':
-        maquina_id = None
-        maquina_id = request.form.get('maquina_id')
-        print("maquina_id:", maquina_id)
-        # Realiza una consulta para obtener el estado actual del atributo booleano
-        cur = mysql.connection.cursor()
-        cur.execute("SELECT estado FROM maquinas WHERE IdMaquina = %s", (maquina_id,))
-        estado_actual = cur.fetchone()
-        print(estado_actual)
-        # Cambia el estado (por ejemplo, de True a False o viceversa)
-        nuevo_estado = not estado_actual[0]
+        estado_id = request.form.get('estado_id')
+        dispo_id = request.form.get('dispo_id')
 
-        # Realiza la actualización en la base de datos
-        cur.execute("UPDATE maquinas SET estado = %s, disponibilidad = %s WHERE IdMaquina = %s", (nuevo_estado, nuevo_estado, maquina_id))
-        mysql.connection.commit()
+        cur = mysql.connection.cursor()
+
+        # Obtén el nombre actual del estado en estado_maquinaria
+        cur.execute("SELECT NOMBRE FROM estado_maquinaria WHERE ID_ESTADO_MAQUINA = %s", (estado_id,))
+        estado_actual = cur.fetchone()
+
+        # Obtén la disponibilidad actual en disponibilidad_maquinaria
+        cur.execute("SELECT DISPONIBILIDAD FROM disponibilidad_maquinaria WHERE ID_DISPONIBILIDAD_MAQUINARIA = %s", (dispo_id,))
+        disponibilidad_actual = cur.fetchone()
+
+        if estado_actual is not None and disponibilidad_actual is not None:
+            # Cambia el nombre de 'Activo' a 'Inactivo' y viceversa
+            nuevo_estado = 1 if estado_actual[0] == 0 else 0
+            nuevo_disponibilidad = 1 - disponibilidad_actual[0]  # Cambia 0 por 1 y viceversa
+
+            # Actualiza el nombre en estado_maquinaria
+            cur.execute("UPDATE estado_maquinaria SET NOMBRE = %s WHERE ID_ESTADO_MAQUINA = %s", (nuevo_estado, estado_id))
+
+            # Actualiza la disponibilidad en disponibilidad_maquinaria
+            cur.execute("UPDATE disponibilidad_maquinaria SET DISPONIBILIDAD = %s WHERE ID_DISPONIBILIDAD_MAQUINARIA = %s", (nuevo_disponibilidad, dispo_id))
+
+            mysql.connection.commit()
+            flash('Estado actualizado correctamente')
+        else:
+            flash('Error: Estado o disponibilidad no encontrados')
 
         cur.close()
-        flash('Estado actualizado correctamente')
         return redirect(url_for('estado_maquinas'))  # Renderiza la plantilla con los datos actualizados
 
 # Traer el historial de la máquina
@@ -779,6 +1013,7 @@ def buscar_maquina():
         cur = mysql.connection.cursor()
         cur.execute("SELECT * FROM maquina WHERE LOWER(nombre) = %s", (nombre,))
         data = cur.fetchall()
+        print(data)
         cur.close()
         if data:
             flash('Máquina encontrado.')
@@ -793,27 +1028,48 @@ def buscar_maquina():
 def mantenimiento_maquinas():
     data = None
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM maquinas WHERE estado = 0')
+    # traer solo las maquinas que estan en mal estado
+    cur.execute('''
+    SELECT maquina.*, estado_maquinaria.NOMBRE AS estado_nombre
+    FROM maquina
+    JOIN estado_maquinaria ON maquina.ID_ESTADO_MAQUINA = estado_maquinaria.ID_ESTADO_MAQUINA
+    WHERE estado_maquinaria.NOMBRE = 0
+    ''')
     data = cur.fetchall()
     mysql.connection.commit()
     return render_template('mantenimiento_maquinas.html', miembros=data)
 
-# Traer el historial de la máquina
-@app.route("/mantenimiento/<maquina_id>")
+# agendar cita mantenimiento
+@app.route("/mantenimiento/<maquina_id>", methods=['GET', 'POST'])
 def getmantenimiento(maquina_id):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM maquinas WHERE IdMaquina = %s", (maquina_id,))
+    cur.execute('SET foreign_key_checks = 0;')
+    cur.execute("SELECT * FROM maquina WHERE ID_MAQUINA = %s", (maquina_id,))
     maquina = cur.fetchone()
     cur.close()
 
     if request.method == 'POST':
-        # Aquí puedes capturar los datos de fecha y hora seleccionados por el usuario
         fecha = request.form.get('fecha')
         hora = request.form.get('hora')
-        # Luego, puedes guardar esta información en tu base de datos o realizar otras acciones necesarias.
+        observacion = request.form.get('observacion')
+
+        cur = mysql.connection.cursor()
+
+        cur.execute("INSERT INTO proceso_citas (TIPO_ESTADO) VALUES (%s)", (str('En proceso'),))
+        cur.execute("SELECT LAST_INSERT_ID()")
+        last_inserted_id = cur.fetchone()[0]
+
+        # Insertar la cita de mantenimiento en la tabla citas_mantenimiento
+        cur.execute("INSERT INTO citas_mantenimiento (ID_MAQUINA, FECHA_CITA, HORA, OBSERVACION, ID_ESTADO_CITA) VALUES (%s, %s, %s, %s, %s)",
+                    (maquina_id, fecha, hora, observacion, last_inserted_id))
+
+
+        mysql.connection.commit()
+        cur.close()
 
         flash(f'Cita agendada para {fecha} a las {hora}')
-    return render_template('vista_mantenimiento.html', maquina=maquina) # Renderiza la plantilla con los datos actualizados
+
+    return render_template('vista_mantenimiento.html', maquina=maquina)
 
 
 

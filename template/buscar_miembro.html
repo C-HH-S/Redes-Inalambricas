@@ -51,12 +51,14 @@
     {% endwith %}
 
 
-    <main id="tabla">
+    <main id="tabla" class="d-flex align-items-center justify-content-center">
         <div class="content-container">
-            <div class="col-md-5">
+            <div class="col-md-80 p-4">
                     <h1>Búsqueda de Miembros</h1>
+                    <br>
                     <form method="POST" action="/buscar_miembro">
                         <label for="busqueda">Buscar por identificación:</label>
+                        <br>
                         <input type="text" id="identificacion" name="identificacion" required>
                         <button type="submit">Buscar</button>
                     </form>
@@ -69,9 +71,10 @@
                     </head>
 
                     <body>
-
+                        <br>
                         {% if resultados %}
                         <h2>Resultados de la búsqueda:</h2>
+                        <br>
                         <ul>
                             {% for miembro in resultados %}
                             <li>Identificación: {{ miembro[0] }}</li>

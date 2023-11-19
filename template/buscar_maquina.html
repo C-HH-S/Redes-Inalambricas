@@ -47,19 +47,23 @@
     {% endif %}
     {% endwith %}
 
-    <main id="tabla">
+    <main id="tabla" class="d-flex align-items-center justify-content-center">
         <div class="content-container">
-            <div class="col-md-5">
+            <div class="col-md-80 p-4">
                 <form method="post">
                     <h1>Búsqueda de Máquinas</h1>
+                    <br>
                     <form method="POST" action="/buscar_maquina">
                         <label for="busqueda">Buscar por nombre:</label>
+                        <br>
                         <input type="text" id="nombre" name="nombre" required>
                         <button type="submit">Buscar</button>
                     </form>
 
                     {% if resultados %}
+                    <br>
                         <h2>Resultados de la búsqueda:</h2>
+                        <br>
                         <ul>
                             {% for m in resultados %}
                             <li>Id Maquina: {{ m[0] }}</li>
@@ -70,13 +74,12 @@
                                     {% else %}
                                     MAL ESTADO
                                     {% endif %}
-                            <li>Disponibilidad: {% if m[4] == 1 %}
+                            <li>Disponibilidad: {% if m[3] == 1 %}
                                 Disponible
                                 {% else %}
                                 No disponible
                                 {% endif %}
                             </li>
-                            <br>
                             <br>
                             {% endfor %}
                         </ul>

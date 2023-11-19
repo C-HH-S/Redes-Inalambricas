@@ -26,7 +26,7 @@
                                 <li><a href="{{url_for('reservas_miembro')}}">Reservas</a></li>
                                 <li><a href="{{url_for('plan_de_trabajo_miembro')}}">Planes de trabajo</a></li>
                                 <li><a href="{{url_for('miembro_estado_membresia')}}">Membresia</a></li>
-                                <li><a href="#">Mi proceso</a></li>
+                                <li><a href="{{url_for('proceso_plan_trabajo')}}">Mi proceso</a></li>
                             </ul>
                         </li>
                         <li><a href="#">Nosotros</a></li>
@@ -92,6 +92,28 @@
             </tbody>
         </table>
     </main>
+    <main>
+        <h6><b>Maquinas Reservadas</b></h6>
+        <table class="table table-striped table-bordered bg-white centrar-tabla">
+            <thead>
+                    <th>Nombre</th>
+                    <th>Fecha</th>
+                    <th>Hora de inicio</th>
+                    <th>Hora de final</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reserva in reservasm %}
+                <tr>
+                    <td>{{ reserva[6] }}</td>
+                    <td>{{ reserva[3] }}</td>
+                    <td>{{ reserva[4] }}</td>
+                    <td>{{ reserva[5] }}</td>
+                {% endfor %}
+            </tbody>
+        </table>
+    </main>
+
 
 
 

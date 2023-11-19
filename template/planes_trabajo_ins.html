@@ -85,12 +85,14 @@
                                 </tr>
                             {% endfor %}
                         </tbody>
+                        
                     </table>
-                    <a href="{{ url_for('entrenador') }}" class="btn btn-primary btn-block">Volver</a>
+
                 {% else %}
                     <p>No hay miembros disponibles para asignar planes de trabajo.</p>
                 {% endif %}
             </div>
         </div>
+        <a href="{{ url_for('entrenador') }}" class="btn btn-primary btn-block">Volver</a>
     </main>
     

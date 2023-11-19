@@ -54,7 +54,7 @@
         <div class="formulario_info">
             <h1 class="edit_perfil">Información Personal</h1>
             <hr>
-            <form action="/actualizar/{{info_miembro[0]}}"  method="POST">
+            <form action="{{ url_for('getidclase', id=p.0) }}" method="POST">
                 <h6><b>Nombre</b></h6>
                 <input class="campo" type="text" name="nombre" id="nombre" value="{{ info_miembro[1] }}">
                 <br>
