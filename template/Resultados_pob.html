@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados</title>
+    <link rel="stylesheet" type="text/css" href="static\CSS\style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f0f0f0;
+            /* Fondo claro */
+            text-align: center;
+            /* Textos centrados */
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            opacity: 0.8;
+            box-shadow: 0 0 20px rgb(0, 222, 252);
+            /* Aplicamos una sombra naranja */
+            margin: 0 auto;
+            /* Centramos el contenedor en la página */
+            text-align: center;
+            /* Centramos el texto */
+            max-width: 768px;
+            /* Establece un ancho máximo para el contenido */
+            margin: 0 auto;
+            /* Centrado horizontal del contenido */
+            max-height: 100%;
+            /* Ajusta esta altura máxima según tus necesidades */
+            overflow-y: auto;
+        }
+
+        img {
+            max-width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container__menu">
+            <div class="menu">
+                <nav>
+                    <ul>
+                        <li><a href="{{ url_for('Usuario') }}" id="selected">Inicio</a></li>
+                        <li><a href="#">Tipo de exposición</a>
+                            <ul>
+                                <li><a href="{{ url_for('Ocupacional') }}">Ocupacional</a></li>
+                                <li><a href="{{ url_for('Poblacional') }}">Poblacional</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="{{ url_for('NOSOTROS') }}">Nosotros</a></li>
+                        <li><a href="{{ url_for('CONTACTOS') }}">Contactos</a></li>
+                        <li><a href="{{ url_for('comentarios') }}">Comentarios</a></li>
+                        <li class="admin">
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}" role="alert">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  {% if accesibilidad == "1" and distancia_horizontal != "0" %}
+    <div class="container">
+        <div class="contact-info">
+            <div class="contact">
+                <h2 style="color: rgb(25, 179, 179);">Resultados de la estacion "{{ Nombre }}"</h2>
+                <p></p>
+                <p>Distancia irradiante: {{ resultado }} metros.</p>
+                <p></p>
+                <p>Distancia Horizontal: {{ distancia_horizontal }} metros.</p>
+                <p></p>
+                <p>Altura de la antena: {{ Altura_irradiacion_formula }} metros.</p>
+                
+            </div>
+        </div>
+        <br>
+        <div class="contact">
+            <h1>Gráfico de Resultados</h1>
+            <img src="{{ imagen_path }}" alt="Gráfico de Resultados">
+            <br>
+            <div class="form-group mx-sm-3 mb-2">
+                <br>
+                {% if 'username' in session %}
+                <a href="{{ url_for('static', filename='resultados.pdf') }}" class="btn btn-primary" download>Descargar PDF</a>
+                <br>
+            {% endif %} 
+            
+            <br>
+
+            <h2> Aviso correspondiente de Rebasamiento
+                <br>
+                <br>
+                <img src="https://normograma.mintic.gov.co/graficas/resolucion_ane_0773_2023_obj_39.gif" alt="Rebasamiento" style="width: 300px; height: auto;">
+                <br>
+                <img src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTnMjYjHt3C1bSc-i9z8fgtj58x0AJeib_Ka1VGi28T5d4TBd9y" style="width: 200;" height="auto">
+                <br>
+                <br>
+                <p>De  acuerdo al grafico la señalizacion de rebasamiento se evidencia en = {{ distancia_horizontal }}</p>
+            </h2>
+            <br>
+            <h4>De acuerdo con los resultados:</h4>
+            <p>*RECOMENDACIONES* : Te recomendamos adicionar vallas alrededor de tu estacion para delimitar la zona poblacional a {{ distancia_horizontal }} metros con el aviso correspondiente.</p>
+            <p>1- Si requiere medición</p>
+            <p>2- Requiere señalización</p>
+            <p>Lo sustenta en la <a href="https://normograma.mintic.gov.co/docs/resolucion_ane_0773_2023.htm#17"> RES 773 (ANEXO) </a> </p>
+        
+        </div>
+        <br>
+        <a href="{{ request.referrer }}" class="btn btn-primary btn-block">Volver</a>
+    </div>
+{% else %}
+    <div class="container">
+        <div class="contact">
+            <h1 style="color: rgb(25, 179, 179);">No se deben realizar mediciones</h1>
+            <br>
+            <h4>De acuerdo con sus datos, la estacion "{{ Nombre }}" puede ser declarada "Normalmente Conforme"<h4>
+            <br>
+            <h5 style="color: rgb(25, 179, 179);">Resolucion_ANE_0773_2023 (pag 26): </h5>
+            
+            <h5>Las estaciones que cumplan con las distancias "r" (mínima distancia a la antena) 
+                y "d" (mínima distancia horizontal), es decir, que no haya acceso de las personas a
+                una distancia menor a "r" y "d", son declaradas Normalmente Conformes; esta condición también
+                se presenta cuando la "a" (distancia vertical de la antena) es mayor que r, razón por la cual no se puede calcular d.
+            </h5>
+            <br>
+            <h5>Aviso correspondiente:<h5>
+            <img src="https://normograma.mintic.gov.co/mintic/graficas/resolucion_ane_0774_2018_obj_43.gif" alt="Aviso Cumplimiento" style="width: 400px; height: auto;">
+        </div>
+        <br>
+        {% if 'username' in session %}
+        <a href="{{ url_for('generar_pdf_route') }}" class="btn btn-primary" download>Descargar PDF</a>
+                <br>
+            {% endif %} 
+            <br>
+        <a href="{{ request.referrer }}" class="btn btn-primary btn-block">Volver</a>
+    </div>
+{% endif %}
+</body>
+
+</html>

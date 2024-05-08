@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App</title>
+    <title>Nosotros</title>
     <link rel="stylesheet" type="text/css" href="static\CSS\style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
         rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
@@ -20,7 +20,8 @@
         .container {
             background-color: white;
             padding: 20px;
-            box-shadow: 0 0 20px orange;
+            opacity: 0.9;
+            box-shadow: 0 0 20px rgb(0, 222, 252);
             /* Aplicamos una sombra naranja */
             margin: 0 auto;
             /* Centramos el contenedor en la página */
@@ -42,77 +43,52 @@
 </head>
 
 <body>
-    <header>
-        <div class="container__menu">
-            <div class="menu">
-                <nav>
-                    <ul>
-                        <li><a href="#" id="selected">Inicio</a></li>
-                        <li><a href="#">Servicios</a>
-                            <ul>
-                                <li><a href="{{ url_for('gestion_usuarios') }}">Gestión de usuarios</a></li>
-                                <li><a href="{{ url_for('gestion_maquinas') }}">Gestión de máquinas</a></li>
-                                <li><a href="#">Gestión de nómina</a></li>
-                                <li><a href="#">Gestión de membresias</a></li>
-                                <li><a href="#">Gestión de instructores</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="#">Nosotros</a></li>
-                        <li><a href="#">Contactos</a></li>
-                        <li><a href="{{ url_for('login') }}"></a></li>
-                    </ul>
-                </nav>
-            </div>
+  <header>
+    <div class="container__menu">
+        <div class="menu">
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('Usuario') }}" id="selected">Inicio</a></li>
+                    <li><a href="#">Tipo de exposición</a>
+                        <ul>
+                            <li><a href="{{ url_for('Ocupacional') }}">Ocupacional</a></li>
+                            <li><a href="{{ url_for('Poblacional') }}">Poblacional</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="{{ url_for('NOSOTROS') }}">Nosotros</a></li>
+                    <li><a href="{{ url_for('CONTACTOS') }}">Contactos</a></li>
+                    <li><a href="{{ url_for('comentarios') }}">Comentarios</a></li>
+                    <li class="admin">
+                </ul>
+            </nav>
         </div>
-    </header>
+    </div>
+</header>
 
     <div class="container">
     <section class="resena-historica">
-        <h2>Reseña Histórica</h2>
-        <p>Fundado en 1995, Gimnasio La Candelaria se ha consolidado como un referente en el ámbito del fitness y la
-            salud en nuestra comunidad. Nuestra historia comenzó con una visión compartida por un grupo de
-            apasionados por el bienestar físico y la vida activa. Desde nuestros modestos inicios en un pequeño
-            local, hemos crecido constantemente a lo largo de los años.</p>
-        <p>Con una firme dedicación a la calidad y la satisfacción del cliente, hemos expandido nuestras
-            instalaciones, implementado tecnología de vanguardia y ampliado nuestra oferta de programas de
-            entrenamiento.</p>
-        <p>A lo largo de las décadas, hemos sido testigos del impacto positivo que hemos tenido en la vida de
-            nuestros miembros. Hemos ayudado a innumerables personas a alcanzar sus objetivos de fitness, a adoptar
-            un estilo de vida más saludable y a cultivar una comunidad de apoyo y motivación.</p>
-        <p>Hoy en día, Gimnasio La Candelaria es un centro de acondicionamiento físico integral que ofrece una
-            amplia gama de servicios, desde entrenamiento personalizado hasta clases grupales dinámicas. Nuestra
-            historia de éxito se ha forjado gracias a la dedicación de nuestro talentoso equipo y la confianza
-            continua de nuestros miembros. A medida que avanzamos hacia el futuro, mantenemos nuestro compromiso con
-            la excelencia y la innovación. Seguimos siendo un lugar donde las metas se convierten en logros y donde
-            las personas encuentran inspiración para llevar una vida activa y saludable. Nuestra historia nos
-            impulsa a continuar siendo líderes en el bienestar y el fitness en nuestra comunidad.</p>
-            <img src="static\img\reseña.jpg">
+        <h2>Estudiantes de último semestre de la Universidad Francisco José de Caldas</h2>
+        <img src="static\img\logo-udistrital.JPG" width="400" height="400" >
+        <br>
+        <p style="text-align: justify;">Somos un equipo de estudiantes de último semestre de la carrera de Sistematización de Datos, apasionados por la tecnología y 
+            el análisis de datos. Con una sólida formación académica y experiencia práctica, hemos adquirido habilidades en el manejo de 
+            herramientas de programación y bases de datos, así como en la aplicación de metodologías analíticas para resolver problemas 
+            complejos. Nos destacamos por nuestra capacidad para trabajar en equipo, nuestra creatividad para encontrar soluciones 
+            innovadoras y nuestro compromiso con la excelencia en cada proyecto que emprendemos. Estamos constantemente buscando 
+            oportunidades para aprender y crecer, y estamos emocionados de poner nuestras habilidades al servicio de desafíos que
+            requieran un enfoque analítico y estratégico.</p>
+
+        <p style="text-align: justify;">Nuestro aplicativo es una herramienta poderosa que permite determinar de manera precisa y eficiente las características 
+            de una estación transmisora de radiocomunicaciones. Con una interfaz intuitiva y fácil de usar, nuestro software utiliza 
+            datos como la potencia, altura, ganancia, frecuencia, y tipo de servicio para calcular aspectos fundamentales como la 
+            cobertura, la potencia irradiada equivalente, y la distancia de seguridad. Gracias a algoritmos avanzados y técnicas de 
+            análisis de datos, nuestro aplicativo proporciona resultados precisos y detallados que son vitales para el diseño y 
+            la operación efectiva de sistemas de radiocomunicaciones. Ya sea para planificar nuevas instalaciones, optimizar redes 
+            existentes, o garantizar el cumplimiento de regulaciones y normativas, nuestro aplicativo es la herramienta ideal 
+            para profesionales en el campo de las telecomunicaciones.</p>
             
         </section>
 
-    <section class="mision">
-        <br>
-        <h2>Misión</h2>
-        <p>Nuestra misión en Gimnasio La Candelaria es proporcionar un ambiente inclusivo y motivador que inspire a
-            las personas a mejorar su salud y bienestar físico. Nos esforzamos por ofrecer programas de
-            entrenamiento de alta calidad, equipo de vanguardia y un servicio excepcional para ayudar a nuestros
-            miembros a alcanzar sus objetivos de acondicionamiento físico de manera segura y efectiva. Nos
-            comprometemos a ser un socio en el viaje hacia una vida más saludable y activa para todos nuestros
-            miembros.</p>
-            <img src="static\img\mision.jpg">
-    </section>
-
-    <section class="vision">
-        <br>
-        <h2>Visión</h2>
-        <p>Nuestra visión en Gimnasio La Candelaria es convertirnos en el principal referente en salud y bienestar
-            en nuestra comunidad. Buscamos ser reconocidos por nuestra excelencia en la oferta de instalaciones de
-            vanguardia, programas de entrenamiento innovadores y un equipo de profesionales altamente capacitados.
-            Deseamos ser un lugar donde personas de todas las edades y niveles de condición física encuentren la
-            inspiración y el apoyo para llevar una vida activa y saludable. Nuestra visión es ser la opción
-            preferida de acondicionamiento físico en nuestra región y más allá.</p>
-            <img src="static\img\vision.jpg">
-    </section>
     </div>
 
 </body>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contactos</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='CSS/style.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+         body {
+            background-color: #f0f0f0;
+            /* Fondo claro */
+            text-align: center;
+            /* Textos centrados */
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            opacity: 0.9;
+            box-shadow: 0 0 20px rgb(0, 222, 252); /* Aplicamos una sombra naranja */
+            margin: 0 auto; /* Centramos el contenedor en la página */
+            text-align: center; /* Centramos el texto */
+            max-width: 768px; /* Establece un ancho máximo para el contenido */
+            margin: 0 auto; /* Centrado horizontal del contenido */
+            max-height: 100%; /* Ajusta esta altura máxima según tus necesidades */
+            overflow-y: auto;
+            }
+
+        img {
+            max-width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+  <header>
+    <div class="container__menu">
+        <div class="menu">
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('Usuario') }}" id="selected">Inicio</a></li>
+                    <li><a href="#">Tipo de exposición</a>
+                        <ul>
+                            <li><a href="{{ url_for('Ocupacional') }}">Ocupacional</a></li>
+                            <li><a href="{{ url_for('Poblacional') }}">Poblacional</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="{{ url_for('NOSOTROS') }}">Nosotros</a></li>
+                    <li><a href="{{ url_for('CONTACTOS') }}">Contactos</a></li>
+                    <li><a href="{{ url_for('comentarios') }}">Comentarios</a></li>
+                    <li class="admin">
+                </ul>
+            </nav>
+        </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <h1>Añade tu comentario</h1>
+   
+    {% if 'username' in session %}
+    <!-- Si el usuario está logeado, mostrar el formulario de comentario -->
+    <form action="{{ url_for('comentarios') }}" method="POST">
+        <div class="form-group mx-sm-3 mb-2">
+            <textarea class="form-control" name="comentario" placeholder="Escribe tu comentario aquí"></textarea>
+        </div>
+        <button type="submit" class="btn btn-info">Enviar comentario</button>
+        <br>
+        <br>
+        <button type="button" class="btn btn-primary"><a href="{{ url_for('logout') }}" style="color: #f0f0f0;">Cerrar sesión</a></button>
+    </form>
+    {% else %}
+    <!-- Si el usuario no está logeado, mostrar un mensaje -->
+    <div class="form-group mx-sm-3 mb-2">
+        <br>
+        <p>Debes iniciar sesión para dejar un comentario.</p>
+    </div>
+    <button type="button" class="btn btn-primary"><a href="{{ url_for('login') }}" style="color: #f0f0f0;">Iniciar Sesión</a></button>
+    <button type="button" class="btn btn-secondary"><a href="{{ url_for('registro') }}" style="color: #f0f0f0;">Registrarme</a></button>
+    {% endif %}
+   
+    <hr>
+       
+    <div>
+        <h2>Comentarios:</h2>
+        {% for comment in comentarios %}
+            <div class="comment">
+                <p><strong>{{comment.id}}</strong>:</p>
+                <p>{{ comment.contenido }}</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <hr>
+  </div>
+
+</body>
+
+</html>
+

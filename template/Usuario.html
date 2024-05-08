@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuario</title>
+    <link rel="stylesheet" type="text/css" href="static\CSS\style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+        crossorigin="anonymous">
+</head>
+
+
+<body>
+    <!-- Barra de navegación -->
+    <header>
+      <div class="container__menu">
+          <div class="menu">
+              <nav>
+                  <ul>
+                      <li><a href="{{ url_for('Usuario') }}" id="selected">Inicio</a></li>
+                      <li><a href="#">Tipo de exposición</a>
+                          <ul>
+                              <li><a href="{{ url_for('Ocupacional') }}">Ocupacional</a></li>
+                              <li><a href="{{ url_for('Poblacional') }}">Poblacional</a></li>
+                          </ul>
+                      </li>
+                      <li><a href="{{ url_for('NOSOTROS') }}">Nosotros</a></li>
+                      <li><a href="{{ url_for('CONTACTOS') }}">Contactos</a></li>
+                      <li><a href="{{ url_for('comentarios') }}">Comentarios</a></li>
+                      <li class="admin">
+                  </ul>
+              </nav>
+          </div>
+      </div>
+  </header>
+
+
+
+      <main style="margin-top: 570px;">
+        <h2>¡Bienvenido Entusiasta de la Radiocomunicación!</h2>
+        <br>
+        <div class="contact-info">
+            <p>Esta es una aplicación que determina el cumplimiento de la 
+            <a href="https://www.suin-juriscol.gov.co/viewDocument.asp?id=30050345#:~:text=RESOLUCION%20773%20DE%202023&text=(noviembre%2002)-,por%20la%20cual%20se%20adoptan%20los%20límites%20de%20exposición%20de,despliegue%20de%20antenas%20de%20radiocomunicaciones." target="_blank">Resolución 773 (2023) de la ANE</a>.</p>
+            <a href="https://img.freepik.com/vector-premium/icono-torre-antena-estilo-comic-ilustracion-vector-dibujos-animados-radiodifusion-sobre-fondo-blanco-aislado-concepto-negocio-efecto-salpicadura-wifi_157943-6974.jpg" target="_blank">
+                <img src="https://img.freepik.com/vector-premium/icono-torre-antena-estilo-comic-ilustracion-vector-dibujos-animados-radiodifusion-sobre-fondo-blanco-aislado-concepto-negocio-efecto-salpicadura-wifi_157943-6974.jpg" alt="Torre de antena" style="width: 100px; height: auto;">
+            </a>
+            <br><br>
+            <h2 style="color: rgb(25, 179, 179);">¿Cómo funciona la aplicación?</h2>
+                      
+                      <br>
+                      <p>1. Dentro de nuestro menú desplegable seleccione el tipo de exposición 
+                        que desea tener en cuenta para su medición:
+                      </p>
+                      <p>* Ocupacional</p>
+                      <p></p>
+                      <p>* Poblacional</p>
+                      <p>2.  Luego de elegir el tipo de exposición, complete los datos del formulario:
+                      </p>
+                      <p>* Frecuencia</p>
+                      <p></p>
+                      <p>* Altura del centro de irradiación</p>
+                      <p></p>
+                      <p>* Potencia</p>
+                      <p></p>
+                      <p>* Ganancia</p>
+                      <p></p>
+                      <p></p>
+                      <p>3. Luego de esto, se le presentarán los resultados y las recomendaciones de acuerdo con las caracteristicas de su estación.
+                       Puede descargar los resultados si inicia sesión en la aplicación.</p>
+                      <br>
+                      <p>Puede navegar a través de la aplicación mediante nuestra barra de menú.
+                    </p>
+                    <br>
+                      <h2 style="color: rgb(25, 179, 179);">¡Disfrute su experiencia!</h2>
+        </div>
+    </main>
+    
+
+</body>
+
+</html>

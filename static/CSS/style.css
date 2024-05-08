@@ -45,7 +45,7 @@
 }
 
 body{
-    background-image: url('https://ossfitness.com/fotos/2021/07/strong-man-training-in-gym-1024x683.jpg');
+    background-image: url('https://static.vecteezy.com/system/resources/previews/001/211/368/non_2x/global-technology-computer-network-background-vector.jpg');
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
@@ -86,15 +86,13 @@ main{
 }
 
 
-
-
 /* Estilo para centrar contenido dentro del main */
 .content-container {
     text-align:left; /* Alinea el texto a la izquierda dentro del contenido */
     max-width: 768px; /* Establece un ancho máximo para el contenido */
     margin: 0 auto; /* Centrado horizontal del contenido */
     max-height: 400px; /* Ajusta esta altura máxima según tus necesidades */
-    overflow-y: auto;
+    overflow-y: auto; /* PONER EN AUTO PARA BARRA DE DESPLAZAMIENTO VERTICAL */
 }
 
 
@@ -117,8 +115,6 @@ table.table th {
     font-weight: bold;
 }
 
-
-
 /* Estilos para el menú desplegable */
 
 .header__superior{
@@ -134,7 +130,7 @@ table.table th {
 .container__menu{
     width: 100%;
     height: 70px;
-    background-color: rgb(247, 243, 15);
+    background-color: rgb(15, 220, 247);
     padding: 0px 20px;
 }
 
@@ -195,24 +191,24 @@ nav > ul > li:last-child:hover > a{
 
 a:hover{
     transform: scale(1.1);
-    background: #f7b63d;
+    background: rgb(61, 142, 247);
     box-shadow: 0px 0px 10 px 0px rgba(0,0,0, 0.5);
 }
 
 #selected{
     transform: scale(1.1);
     transform: scale(1.1);
-    background-color: #f7b63d;
+    background-color: #3d7ef7;
     box-shadow: 0px 0px 10 px 0px rgba(0,0,0, 0.5);
 }
 
 /** Sub Menu*/
 
 nav ul li ul{
-    width: 250px;
+    width: 150px;
     display: flex;
     flex-direction: column;
-    background-color: #f8f79d;
+    background-color: #3d7ef7;
     position: absolute;
     top: 100px;
     left: -5px;
@@ -257,7 +253,7 @@ nav ul li ul li a{
 } 
 
 nav ul li ul li a:hover{
-    background-color: #f7b63d;
+    background-color: #3df1f7;
     color: #000000;
     transform: scale(1.1);
     padding-left: 30px;
@@ -413,7 +409,7 @@ table, td{
     display: flex;
 }
 .contenedor{
-    background: #F1B63C;
+    background: #f1ee3c;
     margin-top: 40px;
     margin-left: 350px;
     margin-bottom: 10px;
@@ -441,4 +437,60 @@ table, td{
 
 h2{
     text-align: center;
+}
+
+.contact-info {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .contact-info h1 {
+    color: #333;
+    text-align: center;
+  }
+
+  .contact-info p {
+    margin: 5px 0;
+  }
+
+  .contact-info p:nth-child(odd) {
+    font-weight: bold;
+  }
+
+  .contact-info p:nth-child(even) {
+    color: #666;
+  }
+
+h2 {
+    color: #333;
+}
+
+.welcome-panel {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.welcome-panel p {
+    margin: 10px 0;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.welcome-panel a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.welcome-panel a:hover {
+    text-decoration: underline;
 }

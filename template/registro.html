@@ -1,0 +1,103 @@
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contactos</title>
+    <link rel="stylesheet" type="text/css" href="static\CSS\style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f0f0f0;
+            /* Fondo claro */
+            text-align: center;
+            /* Textos centrados */
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            opacity: 0.9;
+            box-shadow: 0 0 20px rgb(0, 222, 252); /* Aplicamos una sombra naranja */
+            margin: 0 auto; /* Centramos el contenedor en la página */
+            text-align: center; /* Centramos el texto */
+            max-width: 768px; /* Establece un ancho máximo para el contenido */
+            margin: 0 auto; /* Centrado horizontal del contenido */
+            max-height: 100%; /* Ajusta esta altura máxima según tus necesidades */
+            overflow-y: auto;
+            }
+
+        img {
+            max-width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+  <header>
+    <div class="container__menu">
+        <div class="menu">
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('Usuario') }}" id="selected">Inicio</a></li>
+                    <li><a href="#">Tipo de exposición</a>
+                        <ul>
+                            <li><a href="{{ url_for('Ocupacional') }}">Ocupacional</a></li>
+                            <li><a href="{{ url_for('Poblacional') }}">Poblacional</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="{{ url_for('NOSOTROS') }}">Nosotros</a></li>
+                    <li><a href="{{ url_for('CONTACTOS') }}">Contactos</a></li>
+                    <li><a href="{{ url_for('comentarios') }}">Comentarios</a></li>
+                    <li class="admin">
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+
+
+            <div class="container">
+                <div class="contact-info">
+                    <form action="{{ url_for('registro') }}" method="POST">
+                        <div class="form-group">
+                          <label for="">Nombre</label>
+                          <input type="text" class="form-control" id="nombre" name="nombre" required>
+                 
+                        </div>
+                        <div class="form-group">
+                          <label for="exampleInputPassword1">Apellido</label>
+                          <input type="text" class="form-control" id="apellido" name="apellido" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputPassword1">correo</label>
+                            <input type="email" class="form-control " id="username" name="username" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="exampleInputPassword1">contraseña</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="exampleInputPassword1">pregunta</label>
+                            <input type="pregunta" class="form-control" id="pregunta" name="pregunta" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="exampleInputPassword1">respuesta</label>
+                            <input type="respuesta" class="form-control" id="respuesta" name="respuesta" required>
+                          </div>
+                          <br>
+                        <button type="submit" class="btn btn-primary">Enviar</button>
+                        <a href="{{ request.referrer }}" class="btn btn-primary btn-block">Volver</a>
+                      </form>
+                    </div>
+                  </div>
+                <br>
+
+</body>
+
+</html>

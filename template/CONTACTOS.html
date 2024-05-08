@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App</title>
+    <title>Contactos</title>
     <link rel="stylesheet" type="text/css" href="static\CSS\style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
         rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
@@ -21,7 +21,8 @@
         .container {
             background-color: white;
             padding: 20px;
-            box-shadow: 0 0 20px orange; /* Aplicamos una sombra naranja */
+            opacity: 0.9;
+            box-shadow: 0 0 20px rgb(0, 222, 252); /* Aplicamos una sombra naranja */
             margin: 0 auto; /* Centramos el contenedor en la página */
             text-align: center; /* Centramos el texto */
             max-width: 768px; /* Establece un ancho máximo para el contenido */
@@ -37,58 +38,75 @@
 </head>
 
 <body>
-    <header>
-        <div class="container__menu">
-            <div class="menu">
-                <nav>
-                    <ul>
-                        <li><a href="#" id="selected">Inicio</a></li>
-                        <li><a href="#">Servicios</a>
-                            <ul>
-                                <li><a href="{{ url_for('gestion_usuarios') }}">Gestión de usuarios</a></li>
-                                <li><a href="{{ url_for('gestion_maquinas') }}">Gestión de máquinas</a></li>
-                                <li><a href="#">Gestión de nómina</a></li>
-                                <li><a href="#">Gestión de membresias</a></li>
-                                <li><a href="#">Gestión de instructores</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="#">Nosotros</a></li>
-                        <li><a href="#">Contactos</a></li>
-                        <li><a href="{{ url_for('login') }}"></a></li>
-                    </ul>
-                </nav>
-            </div>
+  <header>
+    <div class="container__menu">
+        <div class="menu">
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('Usuario') }}" id="selected">Inicio</a></li>
+                    <li><a href="#">Tipo de exposición</a>
+                        <ul>
+                            <li><a href="{{ url_for('Ocupacional') }}">Ocupacional</a></li>
+                            <li><a href="{{ url_for('Poblacional') }}">Poblacional</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="{{ url_for('NOSOTROS') }}">Nosotros</a></li>
+                    <li><a href="{{ url_for('CONTACTOS') }}">Contactos</a></li>
+                    <li><a href="{{ url_for('comentarios') }}">Comentarios</a></li>
+                    <li class="admin">
+                </ul>
+            </nav>
         </div>
-    </header>
+    </div>
+</header>
 
 
             <div class="container">
-              <h1>Información de Contacto</h1>
-              <p>Teléfono: 123-456-7890</p>
-              <p>Celular: 987-654-3210</p>
-              <p>Correo Electrónico: info@gimnasiolacandelaria.com</p>
-          
-            
-              
-              <!-- Mapa con la dirección del gimnasio -->
-              
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12345.67890!2d-86.123456!3d35.123456!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNznCsDAwJzI5LjkiTiA4NsKwMDAnMDkuNiJX!5e0!3m2!1sen!2sus!4v1234567890123!5m2!1sen!2sus" allowfullscreen></iframe>
+                <div class="contact-info">
+                    <h1>Información de Contacto</h1>
+                    <div class="contact">
+                      <br>
+                      <p></p>
+                      <h2 style="color: rgb(25, 179, 179);">Autores</h2>
+                      <p></p>
+                      <p>Juliana Rivera</p>
+                      <p>Celular: 320-940-5661</p>
+                      <p>Correo Electrónico: jriveras@udistrital.edu.co</p>
+                      <br>
+                      <p></p>
+                    </div>
+                    <div class="contact">
+                      <p>Claudia Silva</p>
+                      <p>Celular: 305-368-5343</p>
+                      <p>Correo Electrónico: chhernandezs@udistrital.edu.co</p>
+                      <br>
+                      <p></p>
+                    </div>
+                    <div class="contact">
+                      <p>Sebastián Nuñez</p>
+                      <p>Celular: 304-239-5326 </p>
+                      <p>Correo Electrónico: jsnuneza@udistrital.edu.co</p>
+                    </div>
+                    <br><br>
+                    <div class="contact">
+                      <h2 style="color: rgb(25, 179, 179);">Docente</h2>
+                      <p></p>
+                      <p>Marlon Patiño Bernal:</p>
+                      <p>Correo Electrónico: marlonpb@udistrital.edu.co</p>
+                      <p>Asignatura: REDES INALÁMBRICAS </p>
+                    </div>
+                    <br><br>
+                    <br><br>
+                    <div class="contact">
+                      <h2 style="color: rgb(25, 179, 179);">Créditos</h2>
+                      <p></p>
+                      <a href="https://www.udistrital.edu.co/inicio" target="_blank">Universidad Francisco Jose de Caldas</a>
+                      <a href="https://ftecnologica.udistrital.edu.co" target="_blank">Universidad Francisco Jose de Caldas - Facultad Tecnologica</a>
+                      <br><br>
+                      <p>07 de abril de 2024</p>
+                    </div>
+                  </div>
                 <br>
-                <br>
-                <h1>¡Siguenos en nuestras redes!</h1>
-                <!-- Iconos de redes sociales -->
-                <i class="icon fab fa-facebook fa-3x"></i>
-                <i class="icon fab fa-twitter fa-3x"></i>
-                <i class="icon fab fa-instagram fa-3x"></i>
-                <i class="icon fab fa-linkedin fa-3x"></i>
-            </div>
-
-          
-            <!-- Agrega FontAwesome y tu propio CSS si aún no los has incluido -->
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-          </body>
-        </section>
-        </div>
 
 </body>
 
